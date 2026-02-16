@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Miss You ❤️</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #ff5f7e;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ff3f63;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    img {
+      width: 220px;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    .emotional {
+      font-size: 18px;
+      margin-top: 12px;
+      line-height: 1.5;
+      color: #ff3f63;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box" id="loginBox">
+    <h1>🔐 Enter Password</h1>
+    <p>Only for someone special 💖</p>
+    <input type="password" id="password" placeholder="Enter password" />
+    <br />
+    <button onclick="checkPassword()">Unlock 💌</button>
+    <p id="error" style="color:red;"></p>
+  </div>
+
+  <div class="box hidden" id="contentBox">
+    <h1>I Miss You 😭❤️</h1>
+    <div class="gif">
+      <img src="https://tenor.com/view/bubu-kiss-dudu-dudu-bubu-love-cute-couple-kiss-gif-7168794258199755339.gif" alt="cute kiss gif">
+    </div>
+
+    <p class="emotional">
+      I miss you so much 😔💔<br>
+      Every little thing reminds me of you 🥺💭<br>
+      My heart is waiting for you 💓⏳<br>
+      Come back to me soon, okay? 😘🤍
+    </p>
+  </div>
+
+  <script>
+    function checkPassword() {
+      const pass = document.getElementById("password").value;
+      const error = document.getElementById("error");
+
+      if (pass === "2022") {
+        document.getElementById("loginBox").classList.add("hidden");
+        document.getElementById("contentBox").classList.remove("hidden");
+      } else {
+        error.textContent = "Wrong password 😝 Try again!";
+      }
+    }
+  </script>
+
+</body>
+</html>
