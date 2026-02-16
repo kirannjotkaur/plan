@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>For Sewu 🖤</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #111, #000);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: #f2f2f2;
+      overflow: hidden;
+    }
+
+    .lock, .content {
+      background: rgba(0, 0, 0, 0.65);
+      padding: 42px 52px;
+      border-radius: 22px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(6px);
+    }
+
+    .content {
+      display: none;
+      animation: fadeIn 1.6s ease;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      margin: 10px 0;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+
+    .glow {
+      text-shadow:
+        0 0 6px rgba(255,255,255,0.25),
+        0 0 16px rgba(120,180,255,0.35),
+        0 0 28px rgba(90,140,255,0.25);
+    }
+
+    .heart {
+      font-size: 3rem;
+      margin: 18px 0 10px;
+      animation: beat 1.3s infinite;
+      opacity: 0.9;
+    }
+
+    .gif-wrap {
+      margin-top: 14px;
+    }
+
+    .gif-wrap img {
+      max-width: 240px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    input {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      outline: none;
+      font-size: 1rem;
+      margin-top: 10px;
+      width: 170px;
+      text-align: center;
+      background: #0d0d0d;
+      color: #f2f2f2;
+    }
+
+    button {
+      margin-left: 8px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: linear-gradient(135deg, #111, #222);
+      color: #eaeaea;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px) scale(1.04);
+      box-shadow: 0 6px 18px rgba(120,180,255,0.25);
+    }
+
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.22); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lock" id="lockBox">
+    <h2 class="glow">Only for Sewu 🖤</h2>
+    <p>Enter the password</p>
+    <input type="password" id="pass" placeholder="****" />
+    <button onclick="unlock()">Open</button>
+  </div>
+
+  <div class="content" id="contentBox">
+    <h1 class="glow">I Miss You</h1>
+    <h1 class="glow">I Need You</h1>
+
+    <div class="heart">🖤</div>
+
+    <div class="gif-wrap">
+      <img 
+        src="https://www.gif-vif.com/trending/bubu-sleeping-dudu-carry-3lfzh0p305j5i1l2" 
+        alt="Bubu Dudu Hug"
+      />
+    </div>
+  </div>
+
+  <script>
+    function unlock() {
+      const pass = document.getElementById("pass").value;
+      if (pass === "2022") {
+        document.getElementById("lockBox").style.display = "none";
+        document.getElementById("contentBox").style.display = "block";
+      } else {
+        alert("Wrong password 🖤");
+      }
+    }
+  </script>
+
+</body>
+</html>
