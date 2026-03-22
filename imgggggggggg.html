@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>4 Years, Infinite Love</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:black;
+    color:white;
+    text-align:center;
+    overflow-x:hidden;
+}
+
+/* LOADER */
+#loader{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:24px;
+    z-index:999;
+}
+
+/* SECTIONS */
+section{
+    padding:70px 20px;
+}
+
+/* HEADINGS */
+h1{
+    font-size:38px;
+    font-family:'Great Vibes',cursive;
+    color:#ff4d6d;
+}
+
+p{
+    max-width:650px;
+    margin:auto;
+    line-height:1.6;
+}
+
+/* IMAGE */
+img{
+    width:280px;
+    border-radius:20px;
+    margin-top:20px;
+    box-shadow:0 0 25px rgba(255,255,255,0.2);
+}
+
+/* BUTTON */
+button{
+    padding:12px 25px;
+    border:none;
+    background:#ff4d6d;
+    color:white;
+    border-radius:25px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+/* GLOW */
+.glow{
+    animation: glow 2s infinite alternate;
+}
+@keyframes glow{
+    from{ text-shadow:0 0 10px #ff4d6d; }
+    to{ text-shadow:0 0 25px #ff4d6d; }
+}
+
+/* HEART FLOAT */
+.heart{
+    position:fixed;
+    color:#ff4d6d;
+    animation: float 5s linear infinite;
+}
+@keyframes float{
+    from{transform:translateY(100vh);}
+    to{transform:translateY(-10vh);}
+}
+
+/* FADE ANIMATION */
+.fade{
+    opacity:0;
+    transform:translateY(20px);
+    transition:1s;
+}
+.show{
+    opacity:1;
+    transform:translateY(0);
+}
+</style>
+</head>
+
+<body>
+
+<div id="loader">Loading our story... 💖</div>
+
+<!-- YOUTUBE MUSIC -->
+<iframe id="musicFrame" width="0" height="0" 
+src="https://youtu.be/kKAfQWsiHME?si=SfvQxbbLWIQ_By-g"
+allow="autoplay"></iframe>
+
+<section class="fade">
+    <h1 class="glow">4 Years, Infinite Love</h1>
+    <p>From strangers to soulmates… every moment with you is magic 💖</p>
+    <br>
+    <button onclick="playMusic()">Play Our Story</button>
+</section>
+
+<section class="fade">
+    <h1>Our Timeline</h1>
+    <p>23 March 2022 – The day my life changed ❤️</p>
+    <p>11 February 2024 – When destiny brought us closer ✨</p>
+    <p>31 January 2026 – A memory I’ll never forget 💫</p>
+</section>
+
+<section class="fade">
+    <h1>Our Memory</h1>
+
+    <!-- 🔥 YOUR IMAGE -->
+    <img src="my.jpg">
+
+    <p>
+    That one picture holds more than just a moment…  
+    it holds our journey, our laughter, our love.  
+    From traveling together ✈️  
+    to eating momos and chowmein 🍜  
+    holding hands on the street 🤝  
+    sitting together in a bus 🚌  
+    and that one unforgettable first kiss 💋  
+    everything with you feels like magic.
+    </p>
+</section>
+
+<section class="fade">
+    <h1>Reasons I Love You</h1>
+    <p>You stayed when things got hard</p>
+    <p>You understand me without words</p>
+    <p>You are my comfort and my chaos</p>
+    <p>You make my world feel complete</p>
+</section>
+
+<section class="fade">
+    <h1>My Love Letter</h1>
+    <p id="typing"></p>
+</section>
+
+<section class="fade">
+    <h1 class="glow">Forever isn’t enough with you ❤️</h1>
+    <button onclick="secret()">Click if you love me</button>
+</section>
+
+<script>
+
+/* LOADER */
+setTimeout(()=>{
+    document.getElementById("loader").style.display="none";
+},2000);
+
+/* MUSIC */
+function playMusic(){
+    let iframe = document.getElementById("musicFrame");
+    iframe.src += "&autoplay=1";
+}
+
+/* HEARTS */
+setInterval(()=>{
+    let heart = document.createElement("div");
+    heart.innerHTML="❤";
+    heart.className="heart";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.fontSize=(Math.random()*20+10)+"px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),5000);
+},500);
+
+/* SCROLL ANIMATION */
+let elements = document.querySelectorAll(".fade");
+window.addEventListener("scroll",()=>{
+    elements.forEach(el=>{
+        let pos = el.getBoundingClientRect().top;
+        if(pos < window.innerHeight - 50){
+            el.classList.add("show");
+        }
+    });
+});
+
+/* TYPING EFFECT */
+let text = "These 4 years are not just time… they are my life. You are my peace, my chaos, my home. I choose you again and again… forever.";
+let i=0;
+function type(){
+    if(i<text.length){
+        document.getElementById("typing").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type,40);
+    }
+}
+type();
+
+/* SECRET MESSAGE */
+function secret(){
+    alert("You are my forever. No matter what happens, I will always choose you. 💖");
+}
+
+</script>
+
+</body>
+</html>
