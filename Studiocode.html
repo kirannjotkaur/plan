@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Live Code Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: calc(100vh - 64px);
+        }
+
+        #editor {
+            background-color: #1e293b;
+            color: #f8fafc;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 20px;
+            border: none;
+            outline: none;
+            resize: none;
+            width: 100%;
+            height: 100%;
+            tab-size: 4;
+        }
+
+        .preview-pane {
+            background-color: #ffffff;
+            height: 100%;
+            width: 100%;
+            border: none;
+        }
+
+        .toolbar {
+            height: 64px;
+            background-color: #0f172a;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            background-color: #1e293b;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="toolbar">
+        <div class="flex items-center space-x-4">
+            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+            <h1 class="text-xl font-semibold tracking-tight">StudioCode <span class="text-blue-500 text-sm font-normal">Live</span></h1>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+            <button onclick="clearEditor()" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                Clear
+            </button>
+            <button onclick="downloadCode()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg shadow-blue-900/20">
+                Download HTML
+            </button>
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                Live
+            </div>
+        </div>
+    </nav>
+
+    <main class="editor-container">
+        <section class="flex flex-col border-r border-slate-700">
+            <div class="bg-slate-800/50 px-4 py-2 text-xs font-mono text-slate-400 border-b border-slate-700 flex justify-between">
+                <span>INDEX.HTML</span>
+                <span>UTF-8</span>
+            </div>
+            <textarea id="editor" spellcheck="false" placeholder="Type your HTML and CSS here..."></textarea>
+        </section>
+
+        <section class="flex flex-col bg-white">
+            <div class="bg-slate-100 px-4 py-2 text-xs font-mono text-slate-500 border-b border-slate-200">
+                PREVIEW
+            </div>
+            <iframe id="preview" class="preview-pane"></iframe>
+        </section>
+    </main>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+
+        // Initial Template
+        const initialCode = `<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; }
+        p { font-size: 1.2rem; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Hello World!</h1>
+        <p>Start editing the code on the left to see magic happen.</p>
+    </div>
+</body>
+</html>`;
+
+        // Set initial content
+        editor.value = initialCode;
+
+        function updatePreview() {
+            const content = editor.value;
+            const iframeDoc = preview.contentDocument || preview.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(content);
+            iframeDoc.close();
+        }
+
+        // Debounce function to prevent excessive updates
+        let timeout;
+        editor.addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(updatePreview, 300);
+        });
+
+        // Tab key support
+        editor.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+
+                // Set textarea value to: text before caret + tab + text after caret
+                this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+
+                // Put caret in right position
+                this.selectionStart = this.selectionEnd = start + 4;
+            }
+        });
+
+        function clearEditor() {
+            if(confirm('Are you sure you want to clear all code?')) {
+                editor.value = '';
+                updatePreview();
+            }
+        }
+
+        function downloadCode() {
+            const text = editor.value;
+            const blob = new Blob([text], { type: 'text/html' });
+            const anchor = document.createElement('a');
+            anchor.download = 'index.html';
+            anchor.href = window.URL.createObjectURL(blob);
+            anchor.click();
+            window.URL.revokeObjectURL(anchor.href);
+        }
+
+        // Initialize on load
+        window.onload = updatePreview;
+    </script>
+</body>
+  </html>
