@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon Code Editor</title><style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:monospace}
+body{background:#0f172a;color:#e2e8f0}
+
+.container{display:flex;flex-direction:column;height:100vh}
+
+.header{padding:10px;background:#020617;text-align:center;font-size:18px;font-weight:bold}
+
+.tabs{display:flex}
+.tabs button{
+flex:1;padding:10px;border:none;background:#1e293b;color:#94a3b8;cursor:pointer
+}
+.tabs button.active{background:#0f172a;color:#fff}
+
+.editor{flex:1;display:flex;flex-direction:column}
+textarea{
+flex:1;width:100%;border:none;outline:none;padding:10px;background:#020617;color:#38bdf8;resize:none
+}
+
+.actions{display:flex}
+button.run{
+flex:1;padding:12px;border:none;background:#22c55e;color:#000;font-weight:bold;cursor:pointer
+}
+
+iframe{
+width:100%;height:100%;border:none;background:white
+}
+
+.preview-container{display:none;flex:1}
+
+@media (min-width:768px){
+.container{flex-direction:row}
+.editor{width:50%}
+.preview-container{display:block;width:50%}
+}
+</style></head><body><div class="container"><div class="editor">
+<div class="header">Moon Code Editor 🌙</div><div class="tabs">
+<button onclick="showTab('html')" id="htmlTab" class="active">HTML</button>
+<button onclick="showTab('css')">CSS</button>
+<button onclick="showTab('js')">JS</button>
+</div><textarea id="htmlCode"><h1>Hello Moon 🌙</h1></textarea><textarea id="cssCode" style="display:none">body{background:black;color:white;text-align:center}</textarea><textarea id="jsCode" style="display:none">console.log('Hello Moon')</textarea><div class="actions">
+<button class="run" onclick="runCode()">Preview</button>
+</div>
+</div><div class="preview-container" id="previewBox">
+<iframe id="output"></iframe>
+</div></div><script>
+let currentTab = 'html';
+
+function showTab(tab){
+currentTab = tab;
+
+document.getElementById('htmlCode').style.display='none';
+document.getElementById('cssCode').style.display='none';
+document.getElementById('jsCode').style.display='none';
+
+document.getElementById(tab+'Code').style.display='block';
+
+let buttons = document.querySelectorAll('.tabs button');
+buttons.forEach(btn=>btn.classList.remove('active'));
+document.getElementById(tab+'Tab').classList.add('active');
+}
+
+function runCode(){
+let html = document.getElementById('htmlCode').value;
+let css = '<style>'+document.getElementById('cssCode').value+'</style>';let js = '<script>'+document.getElementById('jsCode').value+'</script>';
+
+let output = document.getElementById('output'); output.srcdoc = html + css + js;
+
+if(window.innerWidth < 768){ document.getElementById('previewBox').style.display='block'; } } </script>
+
+</body>
+</html>
