@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Tags – The Complete Visual Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --border: #252a3a;
+    --accent: #f0a500;
+    --accent2: #3be8b0;
+    --accent3: #ff6b6b;
+    --accent4: #7c6af7;
+    --text: #e8eaf0;
+    --muted: #7a80a0;
+    --code-bg: #0a0c12;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lora', Georgia, serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(240,165,0,.15) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(124,106,247,.12) 0%, transparent 60%),
+      var(--bg);
+  }
+
+  .hero-tag-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+    opacity: .35;
+  }
+
+  .hero-tag-strip span {
+    font-family: 'DM Mono', monospace;
+    font-size: .75rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: .2rem .5rem;
+    color: var(--accent);
+    animation: floatIn 1s ease both;
+  }
+
+  .hero-tag-strip span:nth-child(odd)  { animation-delay: calc(var(--i) * .05s); }
+  .hero-tag-strip span:nth-child(even) { color: var(--accent2); }
+
+  @keyframes floatIn {
+    from { opacity:0; transform: translateY(12px); }
+    to   { opacity:1; transform: none; }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.6rem, 8vw, 6rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -.02em;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: .7rem;
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .scroll-arrow {
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(45deg);
+    animation: bounce 1.6s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%,100% { transform: rotate(45deg) translateY(0); }
+    50%      { transform: rotate(45deg) translateY(6px); }
+  }
+
+  /* ── LAYOUT ── */
+  .site-wrap {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 2rem 1.2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .sidebar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    padding-left: .4rem;
+  }
+
+  .sidebar nav { display: flex; flex-direction: column; gap: .15rem; }
+
+  .sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .5rem .8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: .82rem;
+    color: var(--muted);
+    transition: background .2s, color .2s;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .sidebar nav a .num {
+    font-size: .68rem;
+    color: var(--accent);
+    min-width: 18px;
+  }
+
+  .sidebar nav a .tag-pill {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: .05rem .35rem;
+    font-size: .75rem;
+    color: var(--accent2);
+  }
+
+  /* ── MAIN ── */
+  main { padding: 3rem 3.5rem; max-width: 860px; }
+
+  /* ── CHAPTER ── */
+  .chapter {
+    margin-bottom: 5rem;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+
+  .chapter.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ch-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .ch-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--border);
+    flex-shrink: 0;
+    width: 60px;
+    text-align: right;
+  }
+
+  .ch-info h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+  }
+
+  .ch-info h2 .tag-name {
+    color: var(--accent);
+  }
+
+  .ch-info .subtitle {
+    color: var(--muted);
+    font-size: .9rem;
+    margin-top: .3rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+    margin-bottom: 1.6rem;
+    opacity: .4;
+  }
+
+  /* ── DESCRIPTION ── */
+  .description {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin-bottom: 1.8rem;
+    max-width: 680px;
+  }
+
+  /* ── DIAGRAM ── */
+  .diagram-box {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin-bottom: 1.6rem;
+    overflow-x: auto;
+  }
+
+  .diagram-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: .7rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent4);
+    margin-bottom: 1.2rem;
+  }
+
+  /* SVG diagrams */
+  .diagram-svg svg { width: 100%; height: auto; }
+
+  /* DOM tree */
+  .tree { font-family: 'DM Mono', monospace; font-size: .88rem; line-height: 2; }
+  .tree-line { display: flex; align-items: center; gap: .5rem; }
+  .tree-line .indent { color: var(--border); user-select: none; }
+  .tree-line .t-tag { color: var(--accent); }
+  .tree-line .t-attr { color: var(--accent4); }
+  .tree-line .t-val  { color: var(--accent2); }
+  .tree-line .t-text { color: var(--muted); font-style: italic; }
+  .tree-line .t-close { color: var(--accent3); }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1.6rem;
+    overflow-x: auto;
+  }
+
+  .code-block h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: .7rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .8rem;
+  }
+
+  .code-block pre {
+    font-family: 'DM Mono', monospace;
+    font-size: .88rem;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre;
+  }
+
+  .hl-tag   { color: #ff9d6c; }
+  .hl-attr  { color: var(--accent4); }
+  .hl-val   { color: var(--accent2); }
+  .hl-text  { color: var(--text); }
+  .hl-comm  { color: var(--muted); font-style: italic; }
+
+  /* ── LIVE PREVIEW ── */
+  .preview-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.6rem;
+  }
+
+  .preview-bar {
+    background: var(--surface2);
+    padding: .6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .preview-bar .dot { width:10px;height:10px;border-radius:50%; }
+  .preview-bar .dot.r{background:#ff5f57}
+  .preview-bar .dot.y{background:#febc2e}
+  .preview-bar .dot.g{background:#28c840}
+  .preview-bar span {
+    font-family: 'DM Mono', monospace;
+    font-size: .7rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .preview-content {
+    padding: 1.6rem 2rem;
+    background: #fff;
+    color: #222;
+    font-family: Georgia, serif;
+    font-size: .95rem;
+    line-height: 1.6;
+  }
+
+  .preview-content a { color: #0066cc; }
+  .preview-content img { max-width: 100%; border-radius: 6px; }
+  .preview-content ul, .preview-content ol { margin-left: 1.5rem; }
+  .preview-content table { border-collapse: collapse; width: 100%; }
+  .preview-content th { background: #f0f0f0; padding: .5rem 1rem; border: 1px solid #ccc; }
+  .preview-content td { padding: .5rem 1rem; border: 1px solid #ccc; }
+  .preview-content nav { background: #1a1a2e; padding: .8rem 1.2rem; border-radius: 6px; }
+  .preview-content nav a { color: #fff; margin-right: 1.2rem; text-decoration: none; font-family: Arial,sans-serif; font-size: .9rem; }
+  .preview-content .demo-form { display:flex;flex-direction:column;gap:.7rem;max-width:320px; }
+  .preview-content .demo-form input { padding:.5rem .8rem;border:1px solid #ccc;border-radius:4px;font-size:.9rem; }
+  .preview-content .demo-form button { padding:.5rem 1.2rem;background:#2563eb;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:.9rem; }
+  .preview-content .demo-div { background:#e8f4f8;border-left:4px solid #3498db;padding:1rem;border-radius:4px; }
+  .preview-content .demo-span { background:#fff3cd;padding:.2rem .5rem;border-radius:3px;font-weight:bold;color:#856404; }
+
+  /* ── ATTR TABLE ── */
+  .attr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+    margin-bottom: 1.6rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .attr-table th {
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .7rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .attr-table td {
+    padding: .65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  .attr-table tr:last-child td { border-bottom: none; }
+  .attr-table td:first-child { color: var(--accent2); }
+  .attr-table td:nth-child(2) { color: var(--muted); font-size: .82rem; }
+
+  /* ── TIP BOX ── */
+  .tip {
+    background: rgba(59,232,176,.07);
+    border: 1px solid rgba(59,232,176,.25);
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    font-size: .9rem;
+    color: var(--accent2);
+    margin-bottom: 1.6rem;
+    display: flex;
+    gap: .8rem;
+    align-items: flex-start;
+  }
+
+  .tip-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 1000;
+    transition: width .15s linear;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .site-wrap { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    main { padding: 2rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="pbar"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag-strip">
+    <span>&lt;html&gt;</span><span>&lt;head&gt;</span><span>&lt;title&gt;</span>
+    <span>&lt;body&gt;</span><span>&lt;h1&gt;</span><span>&lt;p&gt;</span>
+    <span>&lt;a&gt;</span><span>&lt;img&gt;</span><span>&lt;ul&gt;</span>
+    <span>&lt;ol&gt;</span><span>&lt;li&gt;</span><span>&lt;div&gt;</span>
+    <span>&lt;span&gt;</span><span>&lt;table&gt;</span><span>&lt;tr&gt;</span>
+    <span>&lt;td&gt;</span><span>&lt;form&gt;</span><span>&lt;input&gt;</span>
+    <span>&lt;button&gt;</span><span>&lt;nav&gt;</span>
+  </div>
+  <h1>HTML Tags<br><em>Visual Guide</em></h1>
+  <p>20 essential HTML tags explained with diagrams, live examples, and clear code — from root to navigation.</p>
+  <div class="hero-scroll-hint">
+    Scroll to learn
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<div class="site-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Chapters</div>
+    <nav id="sidebar-nav">
+      <a href="#ch1"><span class="num">01</span><span class="tag-pill">&lt;html&gt;</span></a>
+      <a href="#ch2"><span class="num">02</span><span class="tag-pill">&lt;head&gt;</span></a>
+      <a href="#ch3"><span class="num">03</span><span class="tag-pill">&lt;title&gt;</span></a>
+      <a href="#ch4"><span class="num">04</span><span class="tag-pill">&lt;body&gt;</span></a>
+      <a href="#ch5"><span class="num">05</span><span class="tag-pill">&lt;h1&gt;</span></a>
+      <a href="#ch6"><span class="num">06</span><span class="tag-pill">&lt;p&gt;</span></a>
+      <a href="#ch7"><span class="num">07</span><span class="tag-pill">&lt;a&gt;</span></a>
+      <a href="#ch8"><span class="num">08</span><span class="tag-pill">&lt;img&gt;</span></a>
+      <a href="#ch9"><span class="num">09</span><span class="tag-pill">&lt;ul&gt;</span></a>
+      <a href="#ch10"><span class="num">10</span><span class="tag-pill">&lt;ol&gt;</span></a>
+      <a href="#ch11"><span class="num">11</span><span class="tag-pill">&lt;li&gt;</span></a>
+      <a href="#ch12"><span class="num">12</span><span class="tag-pill">&lt;div&gt;</span></a>
+      <a href="#ch13"><span class="num">13</span><span class="tag-pill">&lt;span&gt;</span></a>
+      <a href="#ch14"><span class="num">14</span><span class="tag-pill">&lt;table&gt;</span></a>
+      <a href="#ch15"><span class="num">15</span><span class="tag-pill">&lt;tr&gt;</span></a>
+      <a href="#ch16"><span class="num">16</span><span class="tag-pill">&lt;td&gt;</span></a>
+      <a href="#ch17"><span class="num">17</span><span class="tag-pill">&lt;form&gt;</span></a>
+      <a href="#ch18"><span class="num">18</span><span class="tag-pill">&lt;input&gt;</span></a>
+      <a href="#ch19"><span class="num">19</span><span class="tag-pill">&lt;button&gt;</span></a>
+      <a href="#ch20"><span class="num">20</span><span class="tag-pill">&lt;nav&gt;</span></a>
+    </nav>
+  </aside>
+
+  <!-- CONTENT -->
+  <main>
+
+    <!-- ═══════ CH 1 html ═══════ -->
+    <article class="chapter" id="ch1">
+      <div class="ch-header">
+        <div class="ch-num">01</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;html&gt;</span> — Root Element</h2>
+          <div class="subtitle">The container that wraps everything</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;html&gt;</code> element is the root (top-level) element of an HTML document. Every other element must be a descendant of this element. Think of it as the outer wall of a house — everything lives inside it.</p>
+      <div class="diagram-box">
+        <h3>🌲 Document Tree</h3>
+        <div class="tree">
+          <div class="tree-line"><span class="t-tag">&lt;html lang="en"&gt;</span> <span class="t-text">← Root of everything</span></div>
+          <div class="tree-line"><span class="indent">│  </span><span class="t-tag">&lt;head&gt;</span><span class="t-close">&lt;/head&gt;</span> <span class="t-text">← Metadata</span></div>
+          <div class="tree-line"><span class="indent">│  </span><span class="t-tag">&lt;body&gt;</span><span class="t-close">&lt;/body&gt;</span> <span class="t-text">← Visible content</span></div>
+          <div class="tree-line"><span class="t-close">&lt;/html&gt;</span></div>
+        </div>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-comm">&lt;!DOCTYPE html&gt;</span>
+<span class="hl-tag">&lt;html</span> <span class="hl-attr">lang</span>=<span class="hl-val">"en"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;head&gt;</span>...<span class="hl-tag">&lt;/head&gt;</span>
+  <span class="hl-tag">&lt;body&gt;</span>...<span class="hl-tag">&lt;/body&gt;</span>
+<span class="hl-tag">&lt;/html&gt;</span></pre>
+      </div>
+      <table class="attr-table">
+        <tr><th>Attribute</th><th>Description</th></tr>
+        <tr><td>lang</td><td>Declares the language of the document (e.g. "en" for English)</td></tr>
+        <tr><td>dir</td><td>Text direction: ltr (left-to-right) or rtl (right-to-left)</td></tr>
+      </table>
+      <div class="tip"><span class="tip-icon">💡</span> Always include <code>lang="en"</code> (or your language). Screen readers and search engines use it.</div>
+    </article>
+
+    <!-- ═══════ CH 2 head ═══════ -->
+    <article class="chapter" id="ch2">
+      <div class="ch-header">
+        <div class="ch-num">02</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;head&gt;</span> — Metadata Container</h2>
+          <div class="subtitle">The brain behind the page</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;head&gt;</code> element contains machine-readable information (metadata) about the document. Content inside <code>&lt;head&gt;</code> is never displayed directly on the page.</p>
+      <div class="diagram-box">
+        <h3>🗂️ What Goes in &lt;head&gt;</h3>
+        <svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg" style="max-width:620px">
+          <rect x="10" y="10" width="600" height="180" rx="10" fill="#1c2030" stroke="#252a3a"/>
+          <text x="30" y="35" fill="#f0a500" font-family="monospace" font-size="13">&lt;head&gt;</text>
+          <!-- boxes -->
+          <rect x="40" y="50" width="110" height="36" rx="6" fill="#0a0c12" stroke="#3be8b0"/>
+          <text x="95" y="73" fill="#3be8b0" font-family="monospace" font-size="11" text-anchor="middle">&lt;title&gt;</text>
+          <rect x="165" y="50" width="110" height="36" rx="6" fill="#0a0c12" stroke="#7c6af7"/>
+          <text x="220" y="73" fill="#7c6af7" font-family="monospace" font-size="11" text-anchor="middle">&lt;meta&gt;</text>
+          <rect x="290" y="50" width="110" height="36" rx="6" fill="#0a0c12" stroke="#ff6b6b"/>
+          <text x="345" y="73" fill="#ff6b6b" font-family="monospace" font-size="11" text-anchor="middle">&lt;link&gt;</text>
+          <rect x="415" y="50" width="110" height="36" rx="6" fill="#0a0c12" stroke="#f0a500"/>
+          <text x="470" y="73" fill="#f0a500" font-family="monospace" font-size="11" text-anchor="middle">&lt;script&gt;</text>
+          <!-- arrows -->
+          <text x="40" y="120" fill="#7a80a0" font-family="monospace" font-size="10">Page title in browser tab</text>
+          <text x="165" y="120" fill="#7a80a0" font-family="monospace" font-size="10">Charset, viewport, SEO</text>
+          <text x="290" y="120" fill="#7a80a0" font-family="monospace" font-size="10">Stylesheets, icons</text>
+          <text x="415" y="120" fill="#7a80a0" font-family="monospace" font-size="10">JavaScript files</text>
+          <text x="30" y="175" fill="#f0a500" font-family="monospace" font-size="13">&lt;/head&gt;</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;head&gt;</span>
+  <span class="hl-tag">&lt;meta</span> <span class="hl-attr">charset</span>=<span class="hl-val">"UTF-8"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;meta</span> <span class="hl-attr">name</span>=<span class="hl-val">"viewport"</span> <span class="hl-attr">content</span>=<span class="hl-val">"width=device-width"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;title&gt;</span>My Page<span class="hl-tag">&lt;/title&gt;</span>
+  <span class="hl-tag">&lt;link</span> <span class="hl-attr">rel</span>=<span class="hl-val">"stylesheet"</span> <span class="hl-attr">href</span>=<span class="hl-val">"style.css"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;/head&gt;</span></pre>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> The <code>&lt;head&gt;</code> is invisible to users but critical for browsers, SEO crawlers, and social media link previews.</div>
+    </article>
+
+    <!-- ═══════ CH 3 title ═══════ -->
+    <article class="chapter" id="ch3">
+      <div class="ch-header">
+        <div class="ch-num">03</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;title&gt;</span> — Page Title</h2>
+          <div class="subtitle">What the browser tab shows</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;title&gt;</code> tag sets the title of the HTML page. It appears in the browser tab, bookmarks, and search engine results. It must be placed inside the <code>&lt;head&gt;</code> element.</p>
+      <div class="diagram-box">
+        <h3>🖥️ Browser Tab Diagram</h3>
+        <svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- browser mockup -->
+          <rect x="5" y="5" width="490" height="110" rx="8" fill="#2a2a3e" stroke="#444"/>
+          <!-- tab -->
+          <rect x="15" y="15" width="200" height="28" rx="6 6 0 0" fill="#1a1a2e"/>
+          <text x="25" y="34" fill="#f0a500" font-family="monospace" font-size="12">My Awesome Website 🌟</text>
+          <rect x="225" y="20" width="120" height="20" rx="4" fill="#111"/>
+          <text x="285" y="34" fill="#555" font-family="monospace" font-size="11" text-anchor="middle">+ New Tab</text>
+          <!-- address bar -->
+          <rect x="15" y="47" width="470" height="22" rx="4" fill="#111" stroke="#333"/>
+          <text x="25" y="62" fill="#3be8b0" font-family="monospace" font-size="11">https://mysite.com</text>
+          <!-- arrow annotation -->
+          <line x1="115" y1="15" x2="115" y2="80" stroke="#f0a500" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="120" y="90" fill="#f0a500" font-family="monospace" font-size="10">&lt;title&gt; sets this text</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;head&gt;</span>
+  <span class="hl-tag">&lt;title&gt;</span><span class="hl-text">My Awesome Website</span><span class="hl-tag">&lt;/title&gt;</span>
+<span class="hl-tag">&lt;/head&gt;</span></pre>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> Keep titles under 60 characters for SEO. Google truncates longer titles in search results.</div>
+    </article>
+
+    <!-- ═══════ CH 4 body ═══════ -->
+    <article class="chapter" id="ch4">
+      <div class="ch-header">
+        <div class="ch-num">04</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;body&gt;</span> — Document Body</h2>
+          <div class="subtitle">Everything you see on the page</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;body&gt;</code> element contains all the content that is displayed in the browser window — text, images, links, buttons, forms, everything visual.</p>
+      <div class="diagram-box">
+        <h3>📄 Page Structure</h3>
+        <svg viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="480" height="200" rx="10" fill="#1c2030" stroke="#f0a500" stroke-width="1.5"/>
+          <text x="30" y="35" fill="#f0a500" font-family="monospace" font-size="12">&lt;html&gt;</text>
+          <rect x="30" y="45" width="200" height="35" rx="6" fill="#252a3a" stroke="#7c6af7"/>
+          <text x="130" y="68" fill="#7c6af7" font-family="monospace" font-size="12" text-anchor="middle">&lt;head&gt; — metadata</text>
+          <rect x="30" y="90" width="440" height="95" rx="6" fill="#252a3a" stroke="#3be8b0" stroke-width="1.5"/>
+          <text x="50" y="112" fill="#3be8b0" font-family="monospace" font-size="12">&lt;body&gt; — visible content</text>
+          <rect x="50" y="120" width="90" height="24" rx="4" fill="#0a0c12" stroke="#ff9d6c"/>
+          <text x="95" y="136" fill="#ff9d6c" font-family="monospace" font-size="10" text-anchor="middle">&lt;h1&gt; heading</text>
+          <rect x="155" y="120" width="90" height="24" rx="4" fill="#0a0c12" stroke="#ff9d6c"/>
+          <text x="200" y="136" fill="#ff9d6c" font-family="monospace" font-size="10" text-anchor="middle">&lt;p&gt; text</text>
+          <rect x="260" y="120" width="90" height="24" rx="4" fill="#0a0c12" stroke="#ff9d6c"/>
+          <text x="305" y="136" fill="#ff9d6c" font-family="monospace" font-size="10" text-anchor="middle">&lt;img&gt; image</text>
+          <rect x="365" y="120" width="90" height="24" rx="4" fill="#0a0c12" stroke="#ff9d6c"/>
+          <text x="410" y="136" fill="#ff9d6c" font-family="monospace" font-size="10" text-anchor="middle">&lt;nav&gt; menu</text>
+          <text x="50" y="170" fill="#7a80a0" font-family="monospace" font-size="10">...and many more elements inside</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;body&gt;</span>
+  <span class="hl-tag">&lt;h1&gt;</span><span class="hl-text">Hello World</span><span class="hl-tag">&lt;/h1&gt;</span>
+  <span class="hl-tag">&lt;p&gt;</span><span class="hl-text">Welcome to my website.</span><span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;/body&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content"><h1 style="font-size:1.6rem;margin-bottom:.4rem">Hello World</h1><p>Welcome to my website.</p></div>
+      </div>
+    </article>
+
+    <!-- ═══════ CH 5 h1 ═══════ -->
+    <article class="chapter" id="ch5">
+      <div class="ch-header">
+        <div class="ch-num">05</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;h1&gt;</span> — Top-Level Heading</h2>
+          <div class="subtitle">The biggest, boldest title on the page</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">HTML provides 6 levels of headings: <code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code>. <code>&lt;h1&gt;</code> is the most important and should appear once per page as the main topic. Each level gets progressively smaller.</p>
+      <div class="diagram-box">
+        <h3>📐 Heading Hierarchy</h3>
+        <svg viewBox="0 0 580 190" xmlns="http://www.w3.org/2000/svg">
+          <text x="20" y="35"  fill="#f0a500" font-family="serif" font-size="28" font-weight="bold">h1 — Main Title</text>
+          <text x="30" y="68"  fill="#e8eaf0" font-family="serif" font-size="22" font-weight="bold">h2 — Section</text>
+          <text x="40" y="96"  fill="#b0b8d0" font-family="serif" font-size="17" font-weight="bold">h3 — Sub-section</text>
+          <text x="50" y="119" fill="#8090b0" font-family="serif" font-size="14" font-weight="bold">h4 — Sub-sub-section</text>
+          <text x="60" y="138" fill="#6070a0" font-family="serif" font-size="12" font-weight="bold">h5 — Smaller still</text>
+          <text x="70" y="155" fill="#4a5888" font-family="serif" font-size="11" font-weight="bold">h6 — Smallest heading</text>
+          <!-- scale bar -->
+          <rect x="530" y="15" width="12" height="28" rx="2" fill="#f0a500"/>
+          <rect x="530" y="50" width="12" height="22" rx="2" fill="#e8eaf0"/>
+          <rect x="530" y="79" width="12" height="17" rx="2" fill="#b0b8d0"/>
+          <rect x="530" y="103" width="12" height="13" rx="2" fill="#8090b0"/>
+          <rect x="530" y="123" width="12" height="11" rx="2" fill="#6070a0"/>
+          <rect x="530" y="141" width="12" height="9"  rx="2" fill="#4a5888"/>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;h1&gt;</span><span class="hl-text">Main Title</span><span class="hl-tag">&lt;/h1&gt;</span>
+<span class="hl-tag">&lt;h2&gt;</span><span class="hl-text">Section Heading</span><span class="hl-tag">&lt;/h2&gt;</span>
+<span class="hl-tag">&lt;h3&gt;</span><span class="hl-text">Sub-section</span><span class="hl-tag">&lt;/h3&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <h1 style="font-size:1.8rem;margin-bottom:.2rem">Main Title</h1>
+          <h2 style="font-size:1.4rem;margin-bottom:.2rem">Section Heading</h2>
+          <h3 style="font-size:1.1rem;margin-bottom:.2rem">Sub-section</h3>
+        </div>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> Use only one <code>&lt;h1&gt;</code> per page for good SEO structure. Use headings in order — don't skip from h1 to h4.</div>
+    </article>
+
+    <!-- ═══════ CH 6 p ═══════ -->
+    <article class="chapter" id="ch6">
+      <div class="ch-header">
+        <div class="ch-num">06</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;p&gt;</span> — Paragraph</h2>
+          <div class="subtitle">Block of readable text</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;p&gt;</code> tag defines a paragraph. Browsers automatically add space (margin) before and after each paragraph. It is a block-level element.</p>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;p&gt;</span><span class="hl-text">This is the first paragraph of text.</span><span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;p&gt;</span><span class="hl-text">This is the second paragraph. Notice
+the gap between them.</span><span class="hl-tag">&lt;/p&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <p>This is the first paragraph of text.</p>
+          <p>This is the second paragraph. Notice the gap between them.</p>
+        </div>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> Never use empty <code>&lt;p&gt;&lt;/p&gt;</code> tags to add spacing — use CSS margin instead.</div>
+    </article>
+
+    <!-- ═══════ CH 7 a ═══════ -->
+    <article class="chapter" id="ch7">
+      <div class="ch-header">
+        <div class="ch-num">07</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;a&gt;</span> — Anchor / Hyperlink</h2>
+          <div class="subtitle">The web's connecting glue</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;a&gt;</code> (anchor) element creates a hyperlink. The <code>href</code> attribute specifies the URL destination. Links can point to pages, sections, emails, phone numbers, or files.</p>
+      <div class="diagram-box">
+        <h3>🔗 Link Anatomy</h3>
+        <svg viewBox="0 0 540 90" xmlns="http://www.w3.org/2000/svg">
+          <text x="20" y="40" fill="#e8eaf0" font-family="monospace" font-size="16">&lt;a  href="https://example.com"  target="_blank"&gt;Click Me&lt;/a&gt;</text>
+          <!-- brackets -->
+          <line x1="23" y1="48" x2="23" y2="68" stroke="#ff6b6b" stroke-width="1.5"/>
+          <line x1="23" y1="68" x2="45" y2="68" stroke="#ff6b6b" stroke-width="1.5"/>
+          <text x="20" y="82" fill="#ff6b6b" font-family="monospace" font-size="10">tag</text>
+
+          <line x1="63" y1="48" x2="63" y2="68" stroke="#7c6af7" stroke-width="1.5"/>
+          <line x1="63" y1="68" x2="220" y2="68" stroke="#7c6af7" stroke-width="1.5"/>
+          <text x="80" y="82" fill="#7c6af7" font-family="monospace" font-size="10">href = destination URL</text>
+
+          <line x1="255" y1="48" x2="255" y2="68" stroke="#3be8b0" stroke-width="1.5"/>
+          <line x1="255" y1="68" x2="335" y2="68" stroke="#3be8b0" stroke-width="1.5"/>
+          <text x="255" y="82" fill="#3be8b0" font-family="monospace" font-size="10">new tab</text>
+
+          <line x1="360" y1="48" x2="360" y2="68" stroke="#f0a500" stroke-width="1.5"/>
+          <line x1="360" y1="68" x2="415" y2="68" stroke="#f0a500" stroke-width="1.5"/>
+          <text x="350" y="82" fill="#f0a500" font-family="monospace" font-size="10">link text</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-comm">&lt;!-- External link --&gt;</span>
+<span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"https://google.com"</span> <span class="hl-attr">target</span>=<span class="hl-val">"_blank"</span><span class="hl-tag">&gt;</span>
+  Visit Google
+<span class="hl-tag">&lt;/a&gt;</span>
+
+<span class="hl-comm">&lt;!-- Email link --&gt;</span>
+<span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"mailto:hello@example.com"</span><span class="hl-tag">&gt;</span>Email Us<span class="hl-tag">&lt;/a&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <p><a href="#">Visit Google</a> &nbsp;|&nbsp; <a href="#">Email Us</a></p>
+        </div>
+      </div>
+      <table class="attr-table">
+        <tr><th>Attribute</th><th>Description</th></tr>
+        <tr><td>href</td><td>URL the link points to</td></tr>
+        <tr><td>target="_blank"</td><td>Opens link in a new tab</td></tr>
+        <tr><td>rel="noopener"</td><td>Security for _blank links</td></tr>
+      </table>
+    </article>
+
+    <!-- ═══════ CH 8 img ═══════ -->
+    <article class="chapter" id="ch8">
+      <div class="ch-header">
+        <div class="ch-num">08</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;img&gt;</span> — Image</h2>
+          <div class="subtitle">Embed pictures into your page</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;img&gt;</code> tag embeds an image. It is a self-closing (void) element — no closing tag needed. The <code>src</code> attribute specifies the image source, and <code>alt</code> provides alternative text for accessibility.</p>
+      <div class="diagram-box">
+        <h3>🖼️ Image Tag Anatomy</h3>
+        <svg viewBox="0 0 560 110" xmlns="http://www.w3.org/2000/svg">
+          <text x="20" y="40" fill="#e8eaf0" font-family="monospace" font-size="14">&lt;img  src="photo.jpg"  alt="A cat"  width="300"  height="200"&gt;</text>
+          <line x1="23" y1="48" x2="23" y2="65" stroke="#ff6b6b" stroke-width="1.5"/>
+          <text x="10" y="78" fill="#ff6b6b" font-family="monospace" font-size="9">void tag</text>
+          <line x1="78" y1="48" x2="78" y2="65" stroke="#3be8b0" stroke-width="1.5"/>
+          <line x1="78" y1="65" x2="180" y2="65" stroke="#3be8b0" stroke-width="1.5"/>
+          <text x="70" y="78" fill="#3be8b0" font-family="monospace" font-size="9">image file path</text>
+          <line x1="217" y1="48" x2="217" y2="85" stroke="#f0a500" stroke-width="1.5"/>
+          <line x1="217" y1="85" x2="285" y2="85" stroke="#f0a500" stroke-width="1.5"/>
+          <text x="185" y="98" fill="#f0a500" font-family="monospace" font-size="9">accessibility text</text>
+          <line x1="325" y1="48" x2="325" y2="65" stroke="#7c6af7" stroke-width="1.5"/>
+          <text x="310" y="78" fill="#7c6af7" font-family="monospace" font-size="9">size attrs</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;img</span>
+  <span class="hl-attr">src</span>=<span class="hl-val">"https://placecats.com/200/150"</span>
+  <span class="hl-attr">alt</span>=<span class="hl-val">"A cute cat"</span>
+  <span class="hl-attr">width</span>=<span class="hl-val">"200"</span>
+  <span class="hl-attr">height</span>=<span class="hl-val">"150"</span>
+<span class="hl-tag">&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <img src="https://placehold.co/200x120/3be8b0/1c2030?text=Image+Preview" alt="Demo image" width="200" height="120">
+        </div>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> Always write meaningful <code>alt</code> text. Screen readers announce it, and it shows if the image fails to load.</div>
+    </article>
+
+    <!-- ═══════ CH 9 ul ═══════ -->
+    <article class="chapter" id="ch9">
+      <div class="ch-header">
+        <div class="ch-num">09</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;ul&gt;</span> — Unordered List</h2>
+          <div class="subtitle">Bullet-point lists</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;ul&gt;</code> element creates a bulleted (unordered) list. Each item is wrapped in a <code>&lt;li&gt;</code> tag. Use when order doesn't matter.</p>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;ul&gt;</span>
+  <span class="hl-tag">&lt;li&gt;</span><span class="hl-text">Apples</span><span class="hl-tag">&lt;/li&gt;</span>
+  <span class="hl-tag">&lt;li&gt;</span><span class="hl-text">Bananas</span><span class="hl-tag">&lt;/li&gt;</span>
+  <span class="hl-tag">&lt;li&gt;</span><span class="hl-text">Cherries</span><span class="hl-tag">&lt;/li&gt;</span>
+<span class="hl-tag">&lt;/ul&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content"><ul><li>Apples</li><li>Bananas</li><li>Cherries</li></ul></div>
+      </div>
+    </article>
+
+    <!-- ═══════ CH 10 ol ═══════ -->
+    <article class="chapter" id="ch10">
+      <div class="ch-header">
+        <div class="ch-num">10</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;ol&gt;</span> — Ordered List</h2>
+          <div class="subtitle">Numbered, step-by-step lists</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;ol&gt;</code> element creates a numbered list. Use when sequence matters — steps, rankings, recipes. The browser automatically numbers the <code>&lt;li&gt;</code> items.</p>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;ol&gt;</span>
+  <span class="hl-tag">&lt;li&gt;</span><span class="hl-text">Boil water</span><span class="hl-tag">&lt;/li&gt;</span>
+  <span class="hl-tag">&lt;li&gt;</span><span class="hl-text">Add pasta</span><span class="hl-tag">&lt;/li&gt;</span>
+  <span class="hl-tag">&lt;li&gt;</span><span class="hl-text">Cook 10 minutes</span><span class="hl-tag">&lt;/li&gt;</span>
+<span class="hl-tag">&lt;/ol&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content"><ol><li>Boil water</li><li>Add pasta</li><li>Cook 10 minutes</li></ol></div>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> Use <code>type="A"</code> for letters or <code>type="i"</code> for Roman numerals. Use <code>start="5"</code> to begin numbering from 5.</div>
+    </article>
+
+    <!-- ═══════ CH 11 li ═══════ -->
+    <article class="chapter" id="ch11">
+      <div class="ch-header">
+        <div class="ch-num">11</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;li&gt;</span> — List Item</h2>
+          <div class="subtitle">Each item inside a list</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;li&gt;</code> element represents a single item in a list. It must always be inside a <code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, or <code>&lt;menu&gt;</code> element. It can contain text, images, links, or even nested lists.</p>
+      <div class="diagram-box">
+        <h3>🗂️ &lt;li&gt; in context</h3>
+        <div class="tree">
+          <div class="tree-line"><span class="t-tag">&lt;ul&gt;</span></div>
+          <div class="tree-line"><span class="indent">├── </span><span class="t-tag">&lt;li&gt;</span><span class="t-text">Item 1</span><span class="t-close">&lt;/li&gt;</span></div>
+          <div class="tree-line"><span class="indent">├── </span><span class="t-tag">&lt;li&gt;</span><span class="t-text">Item 2</span><span class="t-close">&lt;/li&gt;</span></div>
+          <div class="tree-line"><span class="indent">└── </span><span class="t-tag">&lt;li&gt;</span><span class="t-text">Item 3 (with nested list)</span></div>
+          <div class="tree-line"><span class="indent">       </span><span class="t-tag">&lt;ul&gt;</span></div>
+          <div class="tree-line"><span class="indent">           </span><span class="t-tag">&lt;li&gt;</span><span class="t-text">Sub-item</span><span class="t-close">&lt;/li&gt;</span></div>
+          <div class="tree-line"><span class="indent">       </span><span class="t-tag">&lt;/ul&gt;</span></div>
+          <div class="tree-line"><span class="indent">    </span><span class="t-close">&lt;/li&gt;</span></div>
+          <div class="tree-line"><span class="t-close">&lt;/ul&gt;</span></div>
+        </div>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview — Nested List</span></div>
+        <div class="preview-content">
+          <ul><li>Item 1</li><li>Item 2</li><li>Item 3<ul><li>Sub-item A</li><li>Sub-item B</li></ul></li></ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- ═══════ CH 12 div ═══════ -->
+    <article class="chapter" id="ch12">
+      <div class="ch-header">
+        <div class="ch-num">12</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;div&gt;</span> — Division / Container</h2>
+          <div class="subtitle">The universal layout box</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;div&gt;</code> is a generic block-level container with no semantic meaning. It groups elements for styling with CSS or manipulation with JavaScript. Think of it as an invisible box.</p>
+      <div class="diagram-box">
+        <h3>📦 Div as Layout Boxes</h3>
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="540" height="180" rx="8" fill="#1c2030" stroke="#f0a500" stroke-dasharray="6 3"/>
+          <text x="220" y="28" fill="#f0a500" font-family="monospace" font-size="10">outer &lt;div&gt;</text>
+          <rect x="30" y="35" width="240" height="140" rx="6" fill="#252a3a" stroke="#3be8b0" stroke-dasharray="4 2"/>
+          <text x="90" y="52" fill="#3be8b0" font-family="monospace" font-size="10">left &lt;div&gt;</text>
+          <text x="50" y="95" fill="#7a80a0" font-family="monospace" font-size="12">Sidebar</text>
+          <rect x="290" y="35" width="240" height="140" rx="6" fill="#252a3a" stroke="#7c6af7" stroke-dasharray="4 2"/>
+          <text x="360" y="52" fill="#7c6af7" font-family="monospace" font-size="10">right &lt;div&gt;</text>
+          <text x="340" y="95" fill="#7a80a0" font-family="monospace" font-size="12">Main Content</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;div</span> <span class="hl-attr">class</span>=<span class="hl-val">"card"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;h2&gt;</span><span class="hl-text">Card Title</span><span class="hl-tag">&lt;/h2&gt;</span>
+  <span class="hl-tag">&lt;p&gt;</span><span class="hl-text">Card content goes here.</span><span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <div class="demo-div"><h2 style="font-size:1.1rem;margin-bottom:.3rem">Card Title</h2><p>Card content goes here.</p></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ═══════ CH 13 span ═══════ -->
+    <article class="chapter" id="ch13">
+      <div class="ch-header">
+        <div class="ch-num">13</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;span&gt;</span> — Inline Container</h2>
+          <div class="subtitle">Style part of a line of text</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;span&gt;</code> is an inline container with no default styling or meaning. It is used to apply CSS or JavaScript to a specific part of text without breaking the flow of the line.</p>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;p&gt;</span>
+  The price is <span class="hl-tag">&lt;span</span> <span class="hl-attr">style</span>=<span class="hl-val">"color:red; font-weight:bold"</span><span class="hl-tag">&gt;</span>
+    $9.99
+  <span class="hl-tag">&lt;/span&gt;</span> only today!
+<span class="hl-tag">&lt;/p&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <p>The price is <span class="demo-span">$9.99</span> only today!</p>
+        </div>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> <code>&lt;div&gt;</code> is block-level (starts a new line). <code>&lt;span&gt;</code> is inline (stays within text flow).</div>
+    </article>
+
+    <!-- ═══════ CH 14–16 table ═══════ -->
+    <article class="chapter" id="ch14">
+      <div class="ch-header">
+        <div class="ch-num">14</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;table&gt;</span> — Table</h2>
+          <div class="subtitle">Rows and columns of data</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;table&gt;</code> element creates a data table. It contains rows (<code>&lt;tr&gt;</code>), which contain header cells (<code>&lt;th&gt;</code>) or data cells (<code>&lt;td&gt;</code>). Tables should be used for tabular data, not page layout.</p>
+      <div class="diagram-box">
+        <h3>🗃️ Table Structure</h3>
+        <svg viewBox="0 0 540 190" xmlns="http://www.w3.org/2000/svg">
+          <text x="15" y="22" fill="#f0a500" font-family="monospace" font-size="12">&lt;table&gt;</text>
+          <!-- header row -->
+          <rect x="15" y="30" width="510" height="36" rx="0" fill="#252a3a" stroke="#7c6af7"/>
+          <text x="25" y="42" fill="#7c6af7" font-family="monospace" font-size="10">&lt;tr&gt;</text>
+          <rect x="60" y="34" width="130" height="28" rx="3" fill="#1c2030" stroke="#7c6af7"/>
+          <text x="125" y="53" fill="#7c6af7" font-family="monospace" font-size="11" text-anchor="middle">&lt;th&gt; Name &lt;/th&gt;</text>
+          <rect x="205" y="34" width="130" height="28" rx="3" fill="#1c2030" stroke="#7c6af7"/>
+          <text x="270" y="53" fill="#7c6af7" font-family="monospace" font-size="11" text-anchor="middle">&lt;th&gt; Age &lt;/th&gt;</text>
+          <rect x="350" y="34" width="160" height="28" rx="3" fill="#1c2030" stroke="#7c6af7"/>
+          <text x="430" y="53" fill="#7c6af7" font-family="monospace" font-size="11" text-anchor="middle">&lt;th&gt; City &lt;/th&gt;</text>
+          <!-- data rows -->
+          <rect x="15" y="68" width="510" height="36" rx="0" fill="#1c2030" stroke="#3be8b0" stroke-width=".8"/>
+          <text x="25" y="80" fill="#3be8b0" font-family="monospace" font-size="10">&lt;tr&gt;</text>
+          <rect x="60" y="72" width="130" height="28" rx="3" fill="#0a0c12" stroke="#3be8b0" stroke-width=".6"/>
+          <text x="125" y="91" fill="#e8eaf0" font-family="monospace" font-size="11" text-anchor="middle">&lt;td&gt; Alice &lt;/td&gt;</text>
+          <rect x="205" y="72" width="130" height="28" rx="3" fill="#0a0c12" stroke="#3be8b0" stroke-width=".6"/>
+          <text x="270" y="91" fill="#e8eaf0" font-family="monospace" font-size="11" text-anchor="middle">&lt;td&gt; 24 &lt;/td&gt;</text>
+          <rect x="350" y="72" width="160" height="28" rx="3" fill="#0a0c12" stroke="#3be8b0" stroke-width=".6"/>
+          <text x="430" y="91" fill="#e8eaf0" font-family="monospace" font-size="11" text-anchor="middle">&lt;td&gt; Delhi &lt;/td&gt;</text>
+          <!-- row 2 -->
+          <rect x="15" y="106" width="510" height="36" rx="0" fill="#1c2030" stroke="#3be8b0" stroke-width=".8"/>
+          <text x="25" y="118" fill="#3be8b0" font-family="monospace" font-size="10">&lt;tr&gt;</text>
+          <rect x="60" y="110" width="130" height="28" rx="3" fill="#0a0c12" stroke="#3be8b0" stroke-width=".6"/>
+          <text x="125" y="129" fill="#e8eaf0" font-family="monospace" font-size="11" text-anchor="middle">&lt;td&gt; Bob &lt;/td&gt;</text>
+          <rect x="205" y="110" width="130" height="28" rx="3" fill="#0a0c12" stroke="#3be8b0" stroke-width=".6"/>
+          <text x="270" y="129" fill="#e8eaf0" font-family="monospace" font-size="11" text-anchor="middle">&lt;td&gt; 31 &lt;/td&gt;</text>
+          <rect x="350" y="110" width="160" height="28" rx="3" fill="#0a0c12" stroke="#3be8b0" stroke-width=".6"/>
+          <text x="430" y="129" fill="#e8eaf0" font-family="monospace" font-size="11" text-anchor="middle">&lt;td&gt; Mumbai &lt;/td&gt;</text>
+          <text x="15" y="170" fill="#f0a500" font-family="monospace" font-size="12">&lt;/table&gt;</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;table&gt;</span>
+  <span class="hl-tag">&lt;tr&gt;</span>
+    <span class="hl-tag">&lt;th&gt;</span>Name<span class="hl-tag">&lt;/th&gt;</span>  <span class="hl-tag">&lt;th&gt;</span>Age<span class="hl-tag">&lt;/th&gt;</span>  <span class="hl-tag">&lt;th&gt;</span>City<span class="hl-tag">&lt;/th&gt;</span>
+  <span class="hl-tag">&lt;/tr&gt;</span>
+  <span class="hl-tag">&lt;tr&gt;</span>
+    <span class="hl-tag">&lt;td&gt;</span>Alice<span class="hl-tag">&lt;/td&gt;</span> <span class="hl-tag">&lt;td&gt;</span>24<span class="hl-tag">&lt;/td&gt;</span>   <span class="hl-tag">&lt;td&gt;</span>Delhi<span class="hl-tag">&lt;/td&gt;</span>
+  <span class="hl-tag">&lt;/tr&gt;</span>
+  <span class="hl-tag">&lt;tr&gt;</span>
+    <span class="hl-tag">&lt;td&gt;</span>Bob<span class="hl-tag">&lt;/td&gt;</span>   <span class="hl-tag">&lt;td&gt;</span>31<span class="hl-tag">&lt;/td&gt;</span>   <span class="hl-tag">&lt;td&gt;</span>Mumbai<span class="hl-tag">&lt;/td&gt;</span>
+  <span class="hl-tag">&lt;/tr&gt;</span>
+<span class="hl-tag">&lt;/table&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <table><tr><th>Name</th><th>Age</th><th>City</th></tr><tr><td>Alice</td><td>24</td><td>Delhi</td></tr><tr><td>Bob</td><td>31</td><td>Mumbai</td></tr></table>
+        </div>
+      </div>
+    </article>
+
+    <!-- CH 15 tr -->
+    <article class="chapter" id="ch15">
+      <div class="ch-header">
+        <div class="ch-num">15</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;tr&gt;</span> — Table Row</h2>
+          <div class="subtitle">A single horizontal row in a table</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;tr&gt;</code> element defines a row in an HTML table. Each <code>&lt;tr&gt;</code> contains one or more <code>&lt;th&gt;</code> or <code>&lt;td&gt;</code> cells. Rows are stacked top to bottom.</p>
+      <div class="tip"><span class="tip-icon">💡</span> <code>&lt;tr&gt;</code> must always be a direct child of <code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, or <code>&lt;tfoot&gt;</code>.</div>
+    </article>
+
+    <!-- CH 16 td -->
+    <article class="chapter" id="ch16">
+      <div class="ch-header">
+        <div class="ch-num">16</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;td&gt;</span> — Table Data Cell</h2>
+          <div class="subtitle">A single cell of data</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;td&gt;</code> element defines a data cell in a table. Use <code>&lt;th&gt;</code> for header cells (bold, centered by default). The <code>colspan</code> and <code>rowspan</code> attributes let cells span multiple columns or rows.</p>
+      <div class="code-block">
+        <h3>colspan / rowspan Example</h3>
+        <pre><span class="hl-tag">&lt;tr&gt;</span>
+  <span class="hl-tag">&lt;td</span> <span class="hl-attr">colspan</span>=<span class="hl-val">"2"</span><span class="hl-tag">&gt;</span>Spans 2 columns<span class="hl-tag">&lt;/td&gt;</span>
+<span class="hl-tag">&lt;/tr&gt;</span></pre>
+      </div>
+    </article>
+
+    <!-- ═══════ CH 17 form ═══════ -->
+    <article class="chapter" id="ch17">
+      <div class="ch-header">
+        <div class="ch-num">17</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;form&gt;</span> — HTML Form</h2>
+          <div class="subtitle">Collect input from users</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;form&gt;</code> element groups interactive controls that a user can fill in and submit. The <code>action</code> attribute specifies where to send the data; <code>method</code> specifies how (GET or POST).</p>
+      <div class="diagram-box">
+        <h3>📬 Form Data Flow</h3>
+        <svg viewBox="0 0 560 80" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="20" width="140" height="40" rx="6" fill="#252a3a" stroke="#3be8b0"/>
+          <text x="80" y="44" fill="#3be8b0" font-family="monospace" font-size="11" text-anchor="middle">User fills form</text>
+          <text x="155" y="44" fill="#f0a500" font-family="monospace" font-size="18">→</text>
+          <rect x="175" y="20" width="140" height="40" rx="6" fill="#252a3a" stroke="#7c6af7"/>
+          <text x="245" y="44" fill="#7c6af7" font-family="monospace" font-size="11" text-anchor="middle">Clicks Submit</text>
+          <text x="320" y="44" fill="#f0a500" font-family="monospace" font-size="18">→</text>
+          <rect x="340" y="20" width="200" height="40" rx="6" fill="#252a3a" stroke="#f0a500"/>
+          <text x="440" y="44" fill="#f0a500" font-family="monospace" font-size="11" text-anchor="middle">Data sent to server (action)</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;form</span> <span class="hl-attr">action</span>=<span class="hl-val">"/submit"</span> <span class="hl-attr">method</span>=<span class="hl-val">"post"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-val">"text"</span> <span class="hl-attr">placeholder</span>=<span class="hl-val">"Your name"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;button</span> <span class="hl-attr">type</span>=<span class="hl-val">"submit"</span><span class="hl-tag">&gt;</span>Submit<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;/form&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <div class="demo-form">
+            <input type="text" placeholder="Your name">
+            <button type="button">Submit</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ═══════ CH 18 input ═══════ -->
+    <article class="chapter" id="ch18">
+      <div class="ch-header">
+        <div class="ch-num">18</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;input&gt;</span> — Input Field</h2>
+          <div class="subtitle">The most versatile form element</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;input&gt;</code> element creates an interactive field for user data. It is a void element (no closing tag). The <code>type</code> attribute dramatically changes its behaviour and appearance.</p>
+      <div class="diagram-box">
+        <h3>🎛️ Input Types</h3>
+        <svg viewBox="0 0 560 170" xmlns="http://www.w3.org/2000/svg">
+          <!-- text -->
+          <text x="15" y="28" fill="#7a80a0" font-family="monospace" font-size="10">type="text"</text>
+          <rect x="15" y="35" width="200" height="26" rx="4" fill="#1a1a2e" stroke="#3be8b0"/>
+          <text x="25" y="53" fill="#aaa" font-family="monospace" font-size="11">Enter your name...</text>
+          <!-- password -->
+          <text x="15" y="82" fill="#7a80a0" font-family="monospace" font-size="10">type="password"</text>
+          <rect x="15" y="89" width="200" height="26" rx="4" fill="#1a1a2e" stroke="#7c6af7"/>
+          <text x="25" y="107" fill="#aaa" font-family="monospace" font-size="14">••••••••</text>
+          <!-- checkbox -->
+          <text x="240" y="28" fill="#7a80a0" font-family="monospace" font-size="10">type="checkbox"</text>
+          <rect x="240" y="35" width="20" height="20" rx="3" fill="#1a1a2e" stroke="#f0a500"/>
+          <text x="240" y="53" fill="#f0a500" font-family="monospace" font-size="16">✓</text>
+          <text x="265" y="49" fill="#e8eaf0" font-family="monospace" font-size="12">Accept terms</text>
+          <!-- radio -->
+          <text x="240" y="82" fill="#7a80a0" font-family="monospace" font-size="10">type="radio"</text>
+          <circle cx="250" cy="97" r="8" fill="#1a1a2e" stroke="#ff6b6b"/>
+          <circle cx="250" cy="97" r="4" fill="#ff6b6b"/>
+          <text x="264" y="101" fill="#e8eaf0" font-family="monospace" font-size="12">Option A</text>
+          <!-- range -->
+          <text x="15" y="135" fill="#7a80a0" font-family="monospace" font-size="10">type="range"</text>
+          <rect x="15" y="145" width="200" height="6" rx="3" fill="#252a3a" stroke="#3be8b0" stroke-width=".5"/>
+          <rect x="15" y="145" width="130" height="6" rx="3" fill="#3be8b0"/>
+          <circle cx="145" cy="148" r="8" fill="#3be8b0" stroke="#fff" stroke-width="1.5"/>
+          <!-- color -->
+          <text x="240" y="135" fill="#7a80a0" font-family="monospace" font-size="10">type="color"</text>
+          <rect x="240" y="145" width="36" height="18" rx="3" fill="#f0a500" stroke="#666"/>
+          <text x="282" y="158" fill="#e8eaf0" font-family="monospace" font-size="11">#f0a500</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-val">"text"</span>     <span class="hl-attr">placeholder</span>=<span class="hl-val">"Name"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-val">"email"</span>    <span class="hl-attr">placeholder</span>=<span class="hl-val">"Email"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-val">"password"</span> <span class="hl-attr">placeholder</span>=<span class="hl-val">"Password"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-val">"checkbox"</span><span class="hl-tag">&gt;</span> Remember me
+<span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-val">"submit"</span>   <span class="hl-attr">value</span>=<span class="hl-val">"Send"</span><span class="hl-tag">&gt;</span></pre>
+      </div>
+    </article>
+
+    <!-- ═══════ CH 19 button ═══════ -->
+    <article class="chapter" id="ch19">
+      <div class="ch-header">
+        <div class="ch-num">19</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;button&gt;</span> — Clickable Button</h2>
+          <div class="subtitle">Trigger actions on click</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;button&gt;</code> element creates a clickable button. Unlike <code>&lt;input type="submit"&gt;</code>, it can contain HTML content like icons and styled text. The <code>type</code> attribute controls behaviour.</p>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-comm">&lt;!-- Submit a form --&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">type</span>=<span class="hl-val">"submit"</span><span class="hl-tag">&gt;</span>Submit Form<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-comm">&lt;!-- JavaScript action --&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">onclick</span>=<span class="hl-val">"alert('Hello!')"</span><span class="hl-tag">&gt;</span>
+  Say Hello
+<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-comm">&lt;!-- Disabled button --&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">disabled</span><span class="hl-tag">&gt;</span>Can't click me<span class="hl-tag">&lt;/button&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <div style="display:flex;gap:.8rem;flex-wrap:wrap">
+            <button onclick="alert('Hello! 👋')" style="padding:.45rem 1rem;background:#2563eb;color:#fff;border:none;border-radius:4px;cursor:pointer">Say Hello</button>
+            <button disabled style="padding:.45rem 1rem;background:#ccc;color:#999;border:none;border-radius:4px;cursor:not-allowed">Disabled</button>
+          </div>
+        </div>
+      </div>
+      <table class="attr-table">
+        <tr><th>type</th><th>Behaviour</th></tr>
+        <tr><td>submit</td><td>Submits the parent form</td></tr>
+        <tr><td>button</td><td>No default action — use with JavaScript</td></tr>
+        <tr><td>reset</td><td>Clears all form fields</td></tr>
+      </table>
+    </article>
+
+    <!-- ═══════ CH 20 nav ═══════ -->
+    <article class="chapter" id="ch20">
+      <div class="ch-header">
+        <div class="ch-num">20</div>
+        <div class="ch-info">
+          <h2><span class="tag-name">&lt;nav&gt;</span> — Navigation</h2>
+          <div class="subtitle">The semantic menu container</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <p class="description">The <code>&lt;nav&gt;</code> element is a semantic HTML5 element that represents a section containing navigation links. It communicates to browsers and screen readers that this group of links is for navigating the site.</p>
+      <div class="diagram-box">
+        <h3>🧭 Nav in Page Layout</h3>
+        <svg viewBox="0 0 540 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="520" height="45" rx="6" fill="#1a2040" stroke="#f0a500" stroke-width="1.5"/>
+          <text x="30" y="37" fill="#f0a500" font-family="monospace" font-size="12">&lt;nav&gt;</text>
+          <text x="80" y="37" fill="#e8eaf0" font-family="sans-serif" font-size="13" font-weight="bold">🏠 Home</text>
+          <text x="190" y="37" fill="#e8eaf0" font-family="sans-serif" font-size="13">About</text>
+          <text x="280" y="37" fill="#e8eaf0" font-family="sans-serif" font-size="13">Services</text>
+          <text x="390" y="37" fill="#e8eaf0" font-family="sans-serif" font-size="13">Contact</text>
+          <text x="20" y="65" fill="#f0a500" font-family="monospace" font-size="10">↑ This dark bar is the &lt;nav&gt; element</text>
+          <rect x="10" y="75" width="520" height="110" rx="6" fill="#252a3a" stroke="#3be8b0" stroke-width=".8"/>
+          <text x="250" y="135" fill="#3be8b0" font-family="sans-serif" font-size="16" text-anchor="middle">Main Page Content</text>
+          <text x="250" y="158" fill="#7a80a0" font-family="monospace" font-size="10" text-anchor="middle">&lt;main&gt; or &lt;div&gt;</text>
+        </svg>
+      </div>
+      <div class="code-block">
+        <h3>Code Example</h3>
+        <pre><span class="hl-tag">&lt;nav&gt;</span>
+  <span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"/"</span><span class="hl-tag">&gt;</span>Home<span class="hl-tag">&lt;/a&gt;</span>
+  <span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"/about"</span><span class="hl-tag">&gt;</span>About<span class="hl-tag">&lt;/a&gt;</span>
+  <span class="hl-tag">&lt;a</span> <span class="hl-attr">href</span>=<span class="hl-val">"/contact"</span><span class="hl-tag">&gt;</span>Contact<span class="hl-tag">&lt;/a&gt;</span>
+<span class="hl-tag">&lt;/nav&gt;</span></pre>
+      </div>
+      <div class="preview-box">
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>Live Preview</span></div>
+        <div class="preview-content">
+          <nav><a href="#">Home</a><a href="#">About</a><a href="#">Contact</a></nav>
+        </div>
+      </div>
+      <div class="tip"><span class="tip-icon">💡</span> <code>&lt;nav&gt;</code> is semantic — it has the same visual effect as <code>&lt;div&gt;</code> but tells assistive technologies "these are navigation links."</div>
+    </article>
+
+  </main>
+</div>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    document.getElementById('pbar').style.width = pct + '%';
+  });
+
+  // Intersection observer for fade-in
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.chapter').forEach(c => obs.observe(c));
+
+  // Sidebar active link
+  const chapters = document.querySelectorAll('.chapter');
+  const links = document.querySelectorAll('#sidebar-nav a');
+
+  const sideObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`#sidebar-nav a[href="#${e.target.id}"]`);
+        if (link) {
+          link.classList.add('active');
+          link.scrollIntoView({ block: 'nearest' });
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+
+  chapters.forEach(c => sideObs.observe(c));
+</script>
+</body>
+</html>
