@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOID — Code Editor</title>
+<link rel="manifest" href="#" id="manifest-placeholder">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg0: #0a0a0f;
+    --bg1: #0f0f17;
+    --bg2: #14141f;
+    --bg3: #1a1a28;
+    --bg4: #21213a;
+    --border: #2a2a42;
+    --accent: #7c6dfa;
+    --accent2: #e06cfa;
+    --accent3: #6dfac8;
+    --text0: #f0eeff;
+    --text1: #c8c2f0;
+    --text2: #8880b8;
+    --text3: #524e7a;
+    --red: #fa6d7c;
+    --yellow: #fac96d;
+    --green: #6dfac8;
+    --blue: #6db8fa;
+    --orange: #faa46d;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --tab-h: 42px;
+    --header-h: 52px;
+    --statusbar-h: 26px;
+    --sidebar-w: 220px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%; width: 100%;
+    background: var(--bg0);
+    color: var(--text0);
+    font-family: var(--mono);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────── */
+  #header {
+    height: var(--header-h);
+    background: var(--bg1);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    position: relative;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    flex-shrink: 0;
+    margin-right: 8px;
+  }
+
+  .divider-v {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text1);
+  }
+  .btn-ghost:hover {
+    background: var(--bg3);
+    border-color: var(--accent);
+    color: var(--text0);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #6052e0);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 0 16px rgba(124,109,250,0.3);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 24px rgba(124,109,250,0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-success {
+    background: transparent;
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .btn-success:hover {
+    background: rgba(109,250,200,0.1);
+    box-shadow: 0 0 12px rgba(109,250,200,0.2);
+  }
+
+  .btn-ai {
+    background: linear-gradient(135deg, #9c27b0, var(--accent2));
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 0 14px rgba(224,108,250,0.3);
+  }
+  .btn-ai:hover {
+    box-shadow: 0 0 24px rgba(224,108,250,0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-install {
+    background: linear-gradient(135deg, #1a6832, #2d9c50);
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 0 12px rgba(109,250,200,0.2);
+  }
+  .btn-install:hover {
+    box-shadow: 0 0 24px rgba(109,250,200,0.4);
+    transform: translateY(-1px);
+  }
+
+  .spacer { flex: 1; }
+
+  /* ─── TABS ────────────────────────────────────────────── */
+  #tabs-bar {
+    height: var(--tab-h);
+    background: var(--bg1);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: end;
+    padding: 0 8px;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  #tabs-bar::-webkit-scrollbar { display: none; }
+
+  .tab {
+    height: 34px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+    position: relative;
+  }
+  .tab:hover { color: var(--text1); background: var(--bg2); }
+  .tab.active {
+    background: var(--bg2);
+    color: var(--text0);
+    border-color: var(--border);
+    border-bottom-color: var(--bg2);
+  }
+  .tab .tab-icon { font-size: 10px; }
+  .tab-close {
+    font-size: 14px;
+    line-height: 1;
+    color: var(--text3);
+    padding: 0 2px;
+    border-radius: 3px;
+  }
+  .tab-close:hover { background: var(--bg4); color: var(--red); }
+
+  /* ─── MAIN LAYOUT ─────────────────────────────────────── */
+  #workspace {
+    display: flex;
+    height: calc(100vh - var(--header-h) - var(--tab-h) - var(--statusbar-h));
+    position: relative;
+  }
+
+  /* ─── SIDEBAR ─────────────────────────────────────────── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--bg1);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-section {
+    padding: 10px 8px 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    font-size: 12px;
+    color: var(--text1);
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 1px 4px;
+    transition: all 0.1s;
+    border: 1px solid transparent;
+  }
+  .file-item:hover { background: var(--bg3); color: var(--text0); }
+  .file-item.active {
+    background: var(--bg3);
+    color: var(--accent);
+    border-color: rgba(124,109,250,0.2);
+  }
+  .file-icon { font-size: 13px; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 8px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* ─── EDITOR AREA ─────────────────────────────────────── */
+  #editor-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0;
+  }
+
+  #editor-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .code-editor {
+    width: 100%;
+    height: 100%;
+    background: var(--bg0);
+    color: transparent;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 20px 20px 20px 60px;
+    border: none;
+    outline: none;
+    resize: none;
+    caret-color: var(--accent);
+    position: absolute;
+    top: 0; left: 0;
+    z-index: 2;
+    white-space: pre;
+    overflow: auto;
+    tab-size: 2;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .code-highlight {
+    width: 100%;
+    height: 100%;
+    background: var(--bg0);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 20px 20px 20px 60px;
+    position: absolute;
+    top: 0; left: 0;
+    z-index: 1;
+    white-space: pre;
+    overflow: auto;
+    pointer-events: none;
+    tab-size: 2;
+  }
+
+  .line-numbers {
+    position: absolute;
+    top: 0; left: 0;
+    width: 52px;
+    padding: 20px 8px 20px 12px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text3);
+    text-align: right;
+    z-index: 3;
+    pointer-events: none;
+    background: var(--bg0);
+    border-right: 1px solid var(--bg3);
+    font-family: var(--mono);
+  }
+
+  /* ─── RESIZER ─────────────────────────────────────────── */
+  #resizer {
+    width: 4px;
+    background: var(--border);
+    cursor: col-resize;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    position: relative;
+  }
+  #resizer:hover, #resizer.dragging { background: var(--accent); }
+
+  /* ─── PREVIEW PANE ────────────────────────────────────── */
+  #preview-pane {
+    width: 0;
+    display: none;
+    flex-direction: column;
+    background: white;
+    overflow: hidden;
+    transition: width 0.25s ease;
+  }
+  #preview-pane.visible {
+    display: flex;
+    width: 45%;
+  }
+
+  #preview-header {
+    height: 36px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  #url-bar {
+    flex: 1;
+    height: 22px;
+    background: var(--bg0);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text1);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 0 8px;
+    outline: none;
+  }
+
+  #preview-frame {
+    flex: 1;
+    border: none;
+    background: white;
+  }
+
+  /* ─── AI PANEL ────────────────────────────────────────── */
+  #ai-panel {
+    position: fixed;
+    right: 0; top: var(--header-h);
+    width: 360px;
+    height: calc(100vh - var(--header-h));
+    background: var(--bg1);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+  }
+  #ai-panel.open { transform: translateX(0); }
+
+  #ai-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .ai-pulse {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+  }
+
+  .ai-title {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent2);
+    flex: 1;
+    letter-spacing: 0.05em;
+  }
+
+  #ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .ai-msg {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    max-width: 100%;
+    word-wrap: break-word;
+    animation: fadeUp 0.2s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ai-msg.user {
+    background: var(--bg3);
+    color: var(--text1);
+    border: 1px solid var(--border);
+    align-self: flex-end;
+  }
+  .ai-msg.assistant {
+    background: rgba(124,109,250,0.08);
+    color: var(--text0);
+    border: 1px solid rgba(124,109,250,0.2);
+    align-self: flex-start;
+  }
+  .ai-msg pre {
+    background: var(--bg0);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin: 6px 0;
+    overflow-x: auto;
+    font-size: 11.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  #ai-input-area {
+    padding: 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+
+  #ai-input {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text0);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 12px;
+    outline: none;
+    resize: none;
+    min-height: 38px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+    scrollbar-width: none;
+  }
+  #ai-input:focus { border-color: var(--accent2); }
+  #ai-input::placeholder { color: var(--text3); }
+
+  .btn-send {
+    background: linear-gradient(135deg, #9c27b0, var(--accent2));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    width: 38px; height: 38px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-send:hover { transform: scale(1.05); box-shadow: 0 0 14px rgba(224,108,250,0.4); }
+
+  /* ─── QUICK SUGGESTIONS ───────────────────────────────── */
+  .quick-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .chip {
+    font-size: 10.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--mono);
+  }
+  .chip:hover {
+    background: rgba(124,109,250,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ─── STATUS BAR ──────────────────────────────────────── */
+  #statusbar {
+    height: var(--statusbar-h);
+    background: var(--accent);
+    background: linear-gradient(90deg, var(--accent), #6052e0);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 16px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    z-index: 100;
+  }
+  #statusbar span { display: flex; align-items: center; gap: 4px; }
+  #statusbar .sep { opacity: 0.3; }
+
+  /* ─── INSTALL MODAL ───────────────────────────────────── */
+  #install-modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  #install-modal.open { opacity: 1; pointer-events: all; }
+
+  .modal-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 440px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(124,109,250,0.1);
+    animation: scaleIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-icon {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .modal-title {
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 800;
+    text-align: center;
+    color: var(--text0);
+    margin-bottom: 8px;
+  }
+  .modal-sub {
+    font-size: 12.5px;
+    color: var(--text2);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .modal-steps {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--text1);
+    line-height: 2;
+  }
+  .modal-steps ol { padding-left: 18px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions .btn { flex: 1; justify-content: center; padding: 10px; }
+
+  /* ─── SYNTAX COLORS ───────────────────────────────────── */
+  .t-kw { color: #c792ea; }
+  .t-fn { color: #82aaff; }
+  .t-str { color: #c3e88d; }
+  .t-num { color: #f78c6c; }
+  .t-cmt { color: #546e7a; font-style: italic; }
+  .t-tag { color: #f07178; }
+  .t-attr { color: #ffcb6b; }
+  .t-val { color: #c3e88d; }
+  .t-prop { color: #b2ccd6; }
+  .t-sel { color: #82aaff; }
+  .t-unit { color: #f78c6c; }
+  .t-punc { color: #89ddff; }
+  .t-var { color: var(--text0); }
+
+  /* ─── LOADING DOTS ────────────────────────────────────── */
+  .loading-dots span {
+    animation: blink 1.2s ease-in-out infinite;
+    opacity: 0;
+  }
+  .loading-dots span:nth-child(1) { animation-delay: 0s; }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
+
+  /* ─── SCROLLBAR ───────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+  /* ─── TOAST ───────────────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 40px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 12px;
+    color: var(--text0);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── AUTOCOMPLETE ────────────────────────────────────── */
+  #autocomplete {
+    position: absolute;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    z-index: 50;
+    min-width: 180px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    font-size: 12px;
+  }
+  .ac-item {
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text1);
+    transition: background 0.1s;
+  }
+  .ac-item:hover, .ac-item.selected { background: var(--bg3); color: var(--text0); }
+  .ac-icon { font-size: 10px; color: var(--accent); }
+  .ac-type { font-size: 10px; color: var(--text3); margin-left: auto; }
+
+  /* Thinking indicator */
+  .thinking-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(124,109,250,0.05);
+    border: 1px solid rgba(124,109,250,0.15);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--text2);
+    align-self: flex-start;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<div id="header">
+  <div class="logo">VOID</div>
+  <div class="divider-v"></div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="newFile()" title="New File (Ctrl+N)">
+      ＋ New
+    </button>
+    <button class="btn btn-ghost" onclick="saveFile()" title="Save (Ctrl+S)">
+      💾 Save
+    </button>
+    <button class="btn btn-ghost" onclick="formatCode()" title="Format (Alt+Shift+F)">
+      ✦ Format
+    </button>
+    <div class="divider-v"></div>
+    <button class="btn btn-success" onclick="togglePreview()" id="preview-btn">
+      ▶ Preview
+    </button>
+    <button class="btn btn-ai" onclick="toggleAI()">
+      ◈ AI Helper
+    </button>
+  </div>
+  <div class="spacer"></div>
+  <div class="header-actions">
+    <button class="btn btn-install" onclick="showInstallModal()" id="install-btn">
+      ⬇ Install App
+    </button>
+  </div>
+</div>
+
+<!-- ══════ TABS ══════ -->
+<div id="tabs-bar">
+  <div class="tab active" data-file="index.html" onclick="switchFile('index.html')">
+    <span class="tab-icon">🌐</span> index.html
+    <span class="tab-close" onclick="closeTab(event,'index.html')">×</span>
+  </div>
+  <div class="tab" data-file="style.css" onclick="switchFile('style.css')">
+    <span class="tab-icon">🎨</span> style.css
+    <span class="tab-close" onclick="closeTab(event,'style.css')">×</span>
+  </div>
+  <div class="tab" data-file="script.js" onclick="switchFile('script.js')">
+    <span class="tab-icon">⚡</span> script.js
+    <span class="tab-close" onclick="closeTab(event,'script.js')">×</span>
+  </div>
+</div>
+
+<!-- ══════ WORKSPACE ══════ -->
+<div id="workspace">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-section">Explorer</div>
+    <div class="file-item active" onclick="switchFile('index.html')">
+      <span class="file-icon">🌐</span> index.html
+    </div>
+    <div class="file-item" onclick="switchFile('style.css')">
+      <span class="file-icon">🎨</span> style.css
+    </div>
+    <div class="file-item" onclick="switchFile('script.js')">
+      <span class="file-icon">⚡</span> script.js
+    </div>
+    <div class="sidebar-section" style="margin-top:12px">Snippets</div>
+    <div class="file-item" onclick="insertSnippet('html5')"><span class="file-icon">📄</span> HTML5 Boilerplate</div>
+    <div class="file-item" onclick="insertSnippet('flexbox')"><span class="file-icon">📐</span> Flexbox Layout</div>
+    <div class="file-item" onclick="insertSnippet('mediaquery')"><span class="file-icon">📱</span> Media Query</div>
+    <div class="file-item" onclick="insertSnippet('fetchapi')"><span class="file-icon">🌐</span> Fetch API</div>
+    <div class="file-item" onclick="insertSnippet('arrow')"><span class="file-icon">⚡</span> Arrow Function</div>
+    <div class="file-item" onclick="insertSnippet('class')"><span class="file-icon">🏗</span> ES6 Class</div>
+
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost" style="font-size:11px;justify-content:center" onclick="downloadProject()">
+        📦 Export Project
+      </button>
+    </div>
+  </div>
+
+  <!-- EDITOR PANE -->
+  <div id="editor-pane">
+    <div id="editor-container">
+      <div class="line-numbers" id="line-numbers">1</div>
+      <div class="code-highlight" id="code-highlight"></div>
+      <textarea class="code-editor" id="code-editor" spellcheck="false"
+        oninput="handleInput()" onscroll="syncScroll()"
+        onkeydown="handleKeyDown(event)" onkeyup="updateCursor()"></textarea>
+      <div id="autocomplete"></div>
+    </div>
+  </div>
+
+  <!-- RESIZER -->
+  <div id="resizer" onmousedown="startResize(event)"></div>
+
+  <!-- PREVIEW PANE -->
+  <div id="preview-pane">
+    <div id="preview-header">
+      <div class="preview-dot" style="background:#fa6d7c"></div>
+      <div class="preview-dot" style="background:#fac96d"></div>
+      <div class="preview-dot" style="background:#6dfac8"></div>
+      <input id="url-bar" value="preview://localhost" readonly>
+      <button class="btn btn-ghost" style="padding:3px 10px;font-size:10px" onclick="refreshPreview()">↺</button>
+    </div>
+    <iframe id="preview-frame"></iframe>
+  </div>
+</div>
+
+<!-- ══════ STATUS BAR ══════ -->
+<div id="statusbar">
+  <span id="sb-lang">🌐 HTML</span>
+  <span class="sep">│</span>
+  <span id="sb-cursor">Ln 1, Col 1</span>
+  <span class="sep">│</span>
+  <span id="sb-chars">0 chars</span>
+  <span class="sep">│</span>
+  <span>UTF-8</span>
+  <span class="sep">│</span>
+  <span>CRLF</span>
+  <div style="flex:1"></div>
+  <span id="sb-saved" style="color:var(--green)">● Saved</span>
+</div>
+
+<!-- ══════ AI PANEL ══════ -->
+<div id="ai-panel">
+  <div id="ai-header">
+    <div class="ai-pulse"></div>
+    <div class="ai-title">AI Code Helper</div>
+    <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="clearChat()">Clear</button>
+    <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="quick-chips">
+    <span class="chip" onclick="quickPrompt('Explain this code')">Explain code</span>
+    <span class="chip" onclick="quickPrompt('Fix bugs in this code')">Fix bugs</span>
+    <span class="chip" onclick="quickPrompt('Optimize this code')">Optimize</span>
+    <span class="chip" onclick="quickPrompt('Add comments')">Add comments</span>
+    <span class="chip" onclick="quickPrompt('Convert to dark theme CSS')">Dark theme</span>
+    <span class="chip" onclick="quickPrompt('Make it responsive')">Responsive</span>
+  </div>
+  <div id="ai-messages">
+    <div class="ai-msg assistant">
+      👋 Hi! I'm your AI code helper. I can explain code, find bugs, optimize, generate snippets, and more.<br><br>
+      Select some code or ask me anything about your project!
+    </div>
+  </div>
+  <div id="ai-input-area">
+    <textarea id="ai-input" placeholder="Ask about your code..." rows="1"
+      onkeydown="aiKeyDown(event)" oninput="autoResize(this)"></textarea>
+    <button class="btn-send" onclick="sendAI()">➤</button>
+  </div>
+</div>
+
+<!-- ══════ INSTALL MODAL ══════ -->
+<div id="install-modal" onclick="closeInstallModal(event)">
+  <div class="modal-card">
+    <div class="modal-icon">⚡</div>
+    <div class="modal-title">Install VOID Editor</div>
+    <div class="modal-sub">Get the full offline experience — works without internet, saves to your device, and launches like a native app.</div>
+    <div class="modal-steps">
+      <strong style="color:var(--text0)">How to install:</strong>
+      <ol>
+        <li>Save this page as <code style="color:var(--accent)">code-editor.html</code></li>
+        <li>Open it in Chrome, Edge, or Firefox</li>
+        <li>Bookmark it for instant access</li>
+        <li>Works 100% offline — no server needed</li>
+      </ol>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="downloadApp()">⬇ Download HTML</button>
+      <button class="btn btn-ghost" onclick="closeInstallModal()">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+const files = {
+  'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Website</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">MyBrand</div>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Hello, World! 👋</h1>
+      <p>Start editing to see your changes live.</p>
+      <button onclick="greet()">Click Me</button>
+    </section>
+  </main>
+
+  <script src="script.js"><\/script>
+</body>
+</html>`,
+
+  'style.css': `/* ─── Reset & Base ─────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0f0f23;
+  color: #e0e0ff;
+  min-height: 100vh;
+}
+
+/* ─── Navigation ─────────────────── */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #7c6dfa;
+}
+
+ul {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+a {
+  color: #a0a0c0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover { color: #7c6dfa; }
+
+/* ─── Hero ───────────────────────── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 70px);
+  text-align: center;
+  padding: 40px;
+  gap: 20px;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  background: linear-gradient(135deg, #7c6dfa, #e06cfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+p {
+  font-size: 18px;
+  color: #8080a0;
+  max-width: 400px;
+}
+
+button {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #7c6dfa, #6052e0);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124,109,250,0.4);
+}`,
+
+  'script.js': `// ─── Main Script ──────────────────────────────
+
+function greet() {
+  const messages = [
+    "Hello from VOID Editor! 🚀",
+    "You're awesome! ✨",
+    "Keep coding! 💻",
+    "Build something great! 🌟"
+  ];
+  const msg = messages[Math.floor(Math.random() * messages.length)];
+  alert(msg);
+}
+
+// ─── On Load ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("Page loaded successfully!");
+  
+  // Add fade-in animation
+  document.body.style.opacity = '0';
+  document.body.style.transition = 'opacity 0.5s ease';
+  requestAnimationFrame(() => {
+    document.body.style.opacity = '1';
+  });
+});`
+};
+
+let currentFile = 'index.html';
+let previewOpen = false;
+let aiOpen = false;
+let isDirty = false;
+let aiMessages = [];
+let ANTHROPIC_KEY = '';
+
+const editor = document.getElementById('code-editor');
+const highlight = document.getElementById('code-highlight');
+const lineNums = document.getElementById('line-numbers');
+const autocompleteEl = document.getElementById('autocomplete');
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+function init() {
+  loadFromStorage();
+  switchFile('index.html');
+  setupShortcuts();
+}
+
+function loadFromStorage() {
+  try {
+    const saved = localStorage.getItem('void_files');
+    if (saved) Object.assign(files, JSON.parse(saved));
+  } catch(e) {}
+}
+
+function saveToStorage() {
+  try { localStorage.setItem('void_files', JSON.stringify(files)); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FILE MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+function switchFile(name) {
+  currentFile = name;
+  editor.value = files[name] || '';
+  updateHighlight();
+  updateLineNumbers();
+  updateSidebar();
+  updateTabs();
+  updateStatusBar();
+  isDirty = false;
+  document.getElementById('sb-saved').textContent = '● Saved';
+  document.getElementById('sb-saved').style.color = 'var(--green)';
+
+  // Update lang indicator
+  const langs = { 'index.html': '🌐 HTML', 'style.css': '🎨 CSS', 'script.js': '⚡ JS' };
+  document.getElementById('sb-lang').textContent = langs[name] || '📄 Text';
+}
+
+function updateTabs() {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.file === currentFile);
+  });
+}
+
+function updateSidebar() {
+  document.querySelectorAll('.file-item').forEach(fi => {
+    const name = fi.querySelector('span + span') || fi;
+    fi.classList.toggle('active', fi.textContent.trim().endsWith(currentFile));
+  });
+  // Simpler: match by onclick attribute
+  document.querySelectorAll('.file-item[onclick]').forEach(fi => {
+    const m = fi.getAttribute('onclick').match(/switchFile\('(.+?)'\)/);
+    if (m) fi.classList.toggle('active', m[1] === currentFile);
+  });
+}
+
+function closeTab(e, name) {
+  e.stopPropagation();
+  showToast(`Keeping ${name} open — files persist in session`);
+}
+
+function newFile() {
+  const name = prompt('File name (e.g. about.html):');
+  if (!name) return;
+  files[name] = `<!-- ${name} -->\n`;
+  // Add tab
+  const tabsBar = document.getElementById('tabs-bar');
+  const icons = { html: '🌐', css: '🎨', js: '⚡' };
+  const ext = name.split('.').pop();
+  const icon = icons[ext] || '📄';
+  const tab = document.createElement('div');
+  tab.className = 'tab';
+  tab.dataset.file = name;
+  tab.innerHTML = `<span class="tab-icon">${icon}</span> ${name} <span class="tab-close" onclick="closeTab(event,'${name}')">×</span>`;
+  tab.onclick = () => switchFile(name);
+  tabsBar.appendChild(tab);
+  switchFile(name);
+  showToast(`Created ${name}`);
+}
+
+function saveFile() {
+  files[currentFile] = editor.value;
+  saveToStorage();
+  isDirty = false;
+  document.getElementById('sb-saved').textContent = '● Saved';
+  document.getElementById('sb-saved').style.color = 'var(--green)';
+  showToast('File saved!');
+  if (previewOpen) refreshPreview();
+}
+
+function downloadProject() {
+  const html = files['index.html'] || '';
+  const css = files['style.css'] || '';
+  const js = files['script.js'] || '';
+
+  const combined = html
+    .replace('</head>', `<style>\n${css}\n</style>\n</head>`)
+    .replace('</body>', `<script>\n${js}\n<\/script>\n</body>`);
+
+  const blob = new Blob([combined], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'project.html';
+  a.click();
+  showToast('Project exported!');
+}
+
+function downloadApp() {
+  // Download this very page
+  const src = document.documentElement.outerHTML;
+  const blob = new Blob([src], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'void-editor.html';
+  a.click();
+  closeInstallModal();
+  showToast('VOID Editor downloaded!');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  EDITOR
+// ═══════════════════════════════════════════════════════════
+function handleInput() {
+  files[currentFile] = editor.value;
+  updateHighlight();
+  updateLineNumbers();
+  updateStatusBar();
+  isDirty = true;
+  document.getElementById('sb-saved').textContent = '● Unsaved';
+  document.getElementById('sb-saved').style.color = 'var(--yellow)';
+  if (previewOpen) schedulePreviewUpdate();
+}
+
+let previewTimer = null;
+function schedulePreviewUpdate() {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(refreshPreview, 800);
+}
+
+function syncScroll() {
+  highlight.scrollTop = editor.scrollTop;
+  highlight.scrollLeft = editor.scrollLeft;
+  lineNums.scrollTop = editor.scrollTop;
+}
+
+function updateLineNumbers() {
+  const lines = editor.value.split('\n').length;
+  lineNums.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('\n');
+}
+
+function updateStatusBar() {
+  const pos = getCursorPos();
+  document.getElementById('sb-cursor').textContent = `Ln ${pos.line}, Col ${pos.col}`;
+  document.getElementById('sb-chars').textContent = `${editor.value.length} chars`;
+}
+
+function updateCursor() { updateStatusBar(); }
+
+function getCursorPos() {
+  const val = editor.value.substring(0, editor.selectionStart);
+  const lines = val.split('\n');
+  return { line: lines.length, col: lines[lines.length-1].length + 1 };
+}
+
+function handleKeyDown(e) {
+  // Tab → 2 spaces
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+    editor.selectionStart = editor.selectionEnd = start + 2;
+    handleInput();
+  }
+
+  // Auto-close brackets/quotes
+  const pairs = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' };
+  if (pairs[e.key] && !e.ctrlKey && !e.metaKey) {
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    if (start !== end) {
+      e.preventDefault();
+      const selected = editor.value.substring(start, end);
+      editor.value = editor.value.substring(0, start) + e.key + selected + pairs[e.key] + editor.value.substring(end);
+      editor.selectionStart = start;
+      editor.selectionEnd = end + 2;
+      handleInput();
+    }
+  }
+
+  // Enter → auto-indent
+  if (e.key === 'Enter') {
+    const start = editor.selectionStart;
+    const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+    const currentLine = editor.value.substring(lineStart, start);
+    const indent = currentLine.match(/^(\s*)/)[1];
+    const lastChar = currentLine.trim().slice(-1);
+    const extraIndent = '{(['.includes(lastChar) ? '  ' : '';
+    setTimeout(() => {
+      const pos = editor.selectionStart;
+      const before = editor.value.substring(0, pos);
+      const after = editor.value.substring(pos);
+      editor.value = before + indent + extraIndent + after;
+      editor.selectionStart = editor.selectionEnd = pos + indent.length + extraIndent.length;
+      handleInput();
+    }, 0);
+  }
+
+  // Ctrl+S
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    saveFile();
+  }
+
+  // Ctrl+/ toggle comment
+  if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+    e.preventDefault();
+    toggleComment();
+  }
+}
+
+function toggleComment() {
+  const start = editor.selectionStart;
+  const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+  const lineEnd = editor.value.indexOf('\n', start);
+  const end = lineEnd === -1 ? editor.value.length : lineEnd;
+  const line = editor.value.substring(lineStart, end);
+
+  let newLine;
+  const ext = currentFile.split('.').pop();
+  if (ext === 'html') {
+    newLine = line.startsWith('<!--') ? line.replace(/^<!--\s?/, '').replace(/\s?-->$/, '') : `<!-- ${line} -->`;
+  } else if (ext === 'css') {
+    newLine = line.startsWith('/*') ? line.replace(/^\/\*\s?/, '').replace(/\s?\*\/$/, '') : `/* ${line} */`;
+  } else {
+    newLine = line.startsWith('//') ? line.replace(/^\/\/\s?/, '') : `// ${line}`;
+  }
+
+  editor.value = editor.value.substring(0, lineStart) + newLine + editor.value.substring(end);
+  editor.selectionStart = editor.selectionEnd = start + (newLine.length - line.length);
+  handleInput();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SYNTAX HIGHLIGHTING
+// ═══════════════════════════════════════════════════════════
+function updateHighlight() {
+  const code = editor.value;
+  const ext = currentFile.split('.').pop();
+  let highlighted;
+  if (ext === 'html') highlighted = highlightHTML(code);
+  else if (ext === 'css') highlighted = highlightCSS(code);
+  else highlighted = highlightJS(code);
+  highlight.innerHTML = highlighted + '\n';
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightHTML(code) {
+  return esc(code)
+    .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="t-cmt">$1</span>')
+    .replace(/(&lt;\/?)([\w-]+)/g, '<span class="t-tag">$1$2</span>')
+    .replace(/([\w-]+)(=)(&quot;[^&]*&quot;)/g, '<span class="t-attr">$1</span><span class="t-punc">$2</span><span class="t-val">$3</span>')
+    .replace(/(&gt;|&lt;|\/&gt;)/g, '<span class="t-punc">$1</span>');
+}
+
+function highlightCSS(code) {
+  return esc(code)
+    .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="t-cmt">$1</span>')
+    .replace(/([\w-]+)\s*:/g, '<span class="t-prop">$1</span>:')
+    .replace(/([#.][\w-]+|[\w-]+(?=\s*\{))/g, '<span class="t-sel">$1</span>')
+    .replace(/(\b\d+(?:\.\d+)?)(px|em|rem|vh|vw|%|s|ms)\b/g, '<span class="t-num">$1</span><span class="t-unit">$2</span>')
+    .replace(/(#[0-9a-fA-F]{3,8})\b/g, '<span class="t-num">$1</span>')
+    .replace(/([{}:;,])/g, '<span class="t-punc">$1</span>');
+}
+
+function highlightJS(code) {
+  const kws = /\b(const|let|var|function|return|if|else|for|while|class|new|this|typeof|import|export|default|async|await|try|catch|throw|of|in|true|false|null|undefined|=>)\b/g;
+  return esc(code)
+    .replace(/(\/\/.*$)/gm, '<span class="t-cmt">$1</span>')
+    .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="t-cmt">$1</span>')
+    .replace(/(`[^`]*`)/g, '<span class="t-str">$1</span>')
+    .replace(/("[^"]*"|'[^']*')/g, '<span class="t-str">$1</span>')
+    .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="t-num">$1</span>')
+    .replace(kws, '<span class="t-kw">$1</span>')
+    .replace(/\b([a-zA-Z_$][\w$]*)\s*(?=\()/g, '<span class="t-fn">$1</span>')
+    .replace(/([(){}[\];,.])/g, '<span class="t-punc">$1</span>');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FORMATTING
+// ═══════════════════════════════════════════════════════════
+function formatCode() {
+  const ext = currentFile.split('.').pop();
+  let code = editor.value;
+
+  if (ext === 'js') {
+    // Basic JS formatter
+    code = code
+      .replace(/\{([^\n])/g, '{\n  $1')
+      .replace(/([^\n])\}/g, '$1\n}')
+      .replace(/;([^\n])/g, ';\n$1')
+      .trim();
+  } else if (ext === 'css') {
+    code = code
+      .replace(/\{([^\n])/g, '{\n  $1')
+      .replace(/;([^\s\n])/g, ';\n  $1')
+      .replace(/([^\n])\}/g, '$1\n}')
+      .trim();
+  }
+
+  editor.value = code;
+  files[currentFile] = code;
+  updateHighlight();
+  updateLineNumbers();
+  showToast('Code formatted!');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SNIPPETS
+// ═══════════════════════════════════════════════════════════
+const snippets = {
+  html5: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+</html>`,
+  flexbox: `.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}`,
+  mediaquery: `@media (max-width: 768px) {
+  /* Mobile styles */
+  .container {
+    flex-direction: column;
+    padding: 16px;
+  }
+}`,
+  fetchapi: `async function fetchData(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(\`HTTP error: \${response.status}\`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Fetch failed:', error);
+  }
+}`,
+  arrow: `const myFunction = (param1, param2) => {
+  return param1 + param2;
+};
+
+// Shorthand
+const double = n => n * 2;`,
+  class: `class MyClass {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    return \`Hello, I'm \${this.name}!\`;
+  }
+
+  static create(name) {
+    return new MyClass(name);
+  }
+}`
+};
+
+function insertSnippet(key) {
+  const snip = snippets[key];
+  if (!snip) return;
+  const start = editor.selectionStart;
+  const before = editor.value.substring(0, start);
+  const after = editor.value.substring(editor.selectionEnd);
+  editor.value = before + snip + after;
+  editor.selectionStart = editor.selectionEnd = start + snip.length;
+  handleInput();
+  editor.focus();
+  showToast(`Inserted ${key} snippet`);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PREVIEW
+// ═══════════════════════════════════════════════════════════
+function togglePreview() {
+  previewOpen = !previewOpen;
+  const pane = document.getElementById('preview-pane');
+  const btn = document.getElementById('preview-btn');
+  if (previewOpen) {
+    pane.classList.add('visible');
+    btn.textContent = '◼ Close Preview';
+    btn.style.background = 'transparent';
+    btn.style.borderColor = 'var(--red)';
+    btn.style.color = 'var(--red)';
+    refreshPreview();
+  } else {
+    pane.classList.remove('visible');
+    btn.textContent = '▶ Preview';
+    btn.style.background = '';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+  }
+}
+
+function refreshPreview() {
+  const frame = document.getElementById('preview-frame');
+  const html = files['index.html'] || '';
+  const css = files['style.css'] || '';
+  const js = files['script.js'] || '';
+
+  const combined = html
+    .replace('</head>', `<style>\n${css}\n</style>\n</head>`)
+    .replace('</body>', `<script>\n${js}\n<\/script>\n</body>`);
+
+  const blob = new Blob([combined], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  frame.src = url;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AI PANEL
+// ═══════════════════════════════════════════════════════════
+function toggleAI() {
+  aiOpen = !aiOpen;
+  document.getElementById('ai-panel').classList.toggle('open', aiOpen);
+}
+
+function clearChat() {
+  aiMessages = [];
+  document.getElementById('ai-messages').innerHTML = `
+    <div class="ai-msg assistant">Chat cleared. How can I help with your code?</div>`;
+}
+
+function quickPrompt(text) {
+  document.getElementById('ai-input').value = text;
+  sendAI();
+}
+
+function aiKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendAI();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function addMessage(role, text) {
+  const msgs = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = `ai-msg ${role}`;
+  // Simple markdown-ish formatting
+  div.innerHTML = text
+    .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+    .replace(/`([^`]+)`/g, '<code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px">$1</code>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addThinking() {
+  const msgs = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = 'thinking-indicator';
+  div.id = 'thinking';
+  div.innerHTML = `<div class="ai-pulse"></div> <span class="loading-dots">Thinking<span>.</span><span>.</span><span>.</span></span>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeThinking() {
+  const t = document.getElementById('thinking');
+  if (t) t.remove();
+}
+
+async function sendAI() {
+  const input = document.getElementById('ai-input');
+  const userText = input.value.trim();
+  if (!userText) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Get current code context
+  const currentCode = editor.value;
+  const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+
+  const contextMsg = selectedText
+    ? `Current file: ${currentFile}\n\nSelected code:\n\`\`\`\n${selectedText}\n\`\`\`\n\n${userText}`
+    : `Current file: ${currentFile}\n\nFull code:\n\`\`\`\n${currentCode.substring(0, 2000)}${currentCode.length > 2000 ? '\n... (truncated)' : ''}\n\`\`\`\n\n${userText}`;
+
+  addMessage('user', userText);
+  addThinking();
+
+  aiMessages.push({ role: 'user', content: contextMsg });
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are an expert code helper assistant inside a code editor called VOID. 
+Help with HTML, CSS, and JavaScript code. 
+Be concise and practical. Use markdown code blocks for code examples.
+When suggesting fixes, show the corrected code clearly.
+Keep responses focused and under 300 words unless a detailed explanation is specifically requested.`,
+        messages: aiMessages
+      })
+    });
+
+    const data = await response.json();
+    removeThinking();
+
+    if (data.content && data.content[0]) {
+      const reply = data.content[0].text;
+      aiMessages.push({ role: 'assistant', content: reply });
+      addMessage('assistant', reply);
+    } else if (data.error) {
+      addMessage('assistant', `⚠️ API Error: ${data.error.message}\n\nMake sure you're using a valid Anthropic API key.`);
+    }
+  } catch(err) {
+    removeThinking();
+    // Fallback: local AI-like responses
+    const fallbackReply = generateLocalResponse(userText, currentCode, selectedText);
+    aiMessages.push({ role: 'assistant', content: fallbackReply });
+    addMessage('assistant', fallbackReply);
+  }
+}
+
+function generateLocalResponse(query, code, selected) {
+  const q = query.toLowerCase();
+  const target = selected || code;
+
+  if (q.includes('explain')) {
+    const lines = target.trim().split('\n').length;
+    const ext = currentFile.split('.').pop();
+    return `This ${ext.toUpperCase()} code has **${lines} lines**.\n\nKey observations:\n- The code appears to be a ${ext === 'html' ? 'webpage structure' : ext === 'css' ? 'stylesheet' : 'JavaScript module'}\n- ${target.includes('function') || target.includes('=>') ? 'Contains function definitions' : 'No functions detected'}\n- ${target.includes('class') ? 'Uses class-based structure' : 'Uses procedural style'}\n\nFor more detailed AI analysis, please add an Anthropic API key.`;
+  }
+
+  if (q.includes('bug') || q.includes('fix') || q.includes('error')) {
+    const issues = [];
+    if (target.includes('var ')) issues.push('Consider using `const` or `let` instead of `var`');
+    if (target.includes('==') && !target.includes('===')) issues.push('Use `===` for strict equality checks');
+    if (target.match(/function\s+\w+\([^)]*\)\s*\{[^}]*\}/)) issues.push('Functions look structurally correct');
+    return issues.length ? `Potential issues found:\n${issues.map(i => `- ${i}`).join('\n')}` : 'No obvious syntax issues detected. For detailed bug analysis, connect the Anthropic API.';
+  }
+
+  if (q.includes('optimize') || q.includes('performance')) {
+    return `Optimization tips for your ${currentFile}:\n\n- **Minify** CSS/JS for production\n- Use **CSS variables** for repeated values\n- **Lazy load** images and scripts\n- Use \`const\` instead of \`let\` where values don't change\n- Consider **debouncing** event handlers\n\nFor AI-powered optimization, connect the Anthropic API.`;
+  }
+
+  if (q.includes('comment')) {
+    return `To add comments:\n\n**HTML:** \`<!-- comment -->\`\n**CSS:** \`/* comment */\`\n**JS:** \`// single line\` or \`/* multi line */\`\n\nTip: Use **Ctrl+/** to toggle comments on the current line!`;
+  }
+
+  if (q.includes('responsive') || q.includes('mobile')) {
+    return `To make it responsive, add to your CSS:\n\n\`\`\`css\n@media (max-width: 768px) {\n  .container {\n    flex-direction: column;\n    padding: 16px;\n  }\n  \n  h1 { font-size: 1.8rem; }\n}\n\n@media (max-width: 480px) {\n  body { padding: 8px; }\n}\n\`\`\`\n\nAlso ensure your HTML has: \`<meta name="viewport" content="width=device-width, initial-scale=1.0">\``;
+  }
+
+  return `I'm running in **offline mode** right now (no API connection).\n\nI can help with:\n- **Quick tips** on HTML/CSS/JS\n- **Snippet insertion** from the sidebar\n- **Code formatting** (Format button)\n- **Comment toggling** (Ctrl+/)\n\nFor full AI assistance, the API endpoint needs to be reachable.\n\nTry the quick-action chips above for common tasks! 🚀`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INSTALL MODAL
+// ═══════════════════════════════════════════════════════════
+function showInstallModal() {
+  document.getElementById('install-modal').classList.add('open');
+}
+
+function closeInstallModal(e) {
+  if (!e || e.target === document.getElementById('install-modal')) {
+    document.getElementById('install-modal').classList.remove('open');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RESIZE
+// ═══════════════════════════════════════════════════════════
+let resizing = false, resizeStart = 0, editorStartW = 0;
+
+function startResize(e) {
+  resizing = true;
+  resizeStart = e.clientX;
+  const pane = document.getElementById('editor-pane');
+  editorStartW = pane.offsetWidth;
+  document.getElementById('resizer').classList.add('dragging');
+  document.addEventListener('mousemove', doResize);
+  document.addEventListener('mouseup', stopResize);
+}
+
+function doResize(e) {
+  if (!resizing) return;
+  const delta = e.clientX - resizeStart;
+  const pane = document.getElementById('editor-pane');
+  const newW = Math.max(300, editorStartW + delta);
+  pane.style.flex = 'none';
+  pane.style.width = newW + 'px';
+}
+
+function stopResize() {
+  resizing = false;
+  document.getElementById('resizer').classList.remove('dragging');
+  document.removeEventListener('mousemove', doResize);
+  document.removeEventListener('mouseup', stopResize);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SHORTCUTS
+// ═══════════════════════════════════════════════════════════
+function setupShortcuts() {
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); newFile(); }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') { e.preventDefault(); togglePreview(); }
+    if (e.key === 'Escape' && aiOpen) toggleAI();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
