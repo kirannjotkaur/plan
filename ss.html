@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Extended Web Code Editor</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  header {
+    padding: 10px;
+    background-color: #1f1f1f;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  /* Tab buttons for switching editors */
+  .tabs {
+    display: flex;
+    background-color: #1f1f1f;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    background-color: #1f1f1f;
+    border-bottom: 2px solid transparent;
+    transition: background-color 0.2s, border-bottom-color 0.2s;
+  }
+  .tab.active {
+    border-bottom: 2px solid #00ffff;
+    background-color: #2b2b2b;
+  }
+
+  /* Editor sections */
+  .editor-section {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    height: calc(100vh - 140px);
+  }
+  .editor-section.active {
+    display: flex;
+  }
+
+  textarea {
+    flex: 1;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    background-color: #2b2b2b;
+    color: #f8f8f2;
+    border: none;
+    resize: none;
+    outline: none;
+  }
+
+  /* Preview iframe */
+  iframe {
+    flex: 1;
+    border: none;
+    width: 100%;
+  }
+
+  /* Container for editor and preview */
+  .container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  /* Buttons container */
+  .buttons {
+    padding: 10px;
+    background-color: #1f1f1f;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 8px 16px;
+    background-color: #3a3a3a;
+    color: #eee;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #555;
+  }
+
+  /* Responsive layout for small screens */
+  @media (max-width: 768px) {
+    .editor-section {
+      height: calc(50vh - 50px);
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>Extended Web Code Editor</header>
+
+<div class="buttons">
+  <button id="downloadBtn">Download</button>
+  <button id="clearHTML">Clear HTML</button>
+  <button id="clearCSS">Clear CSS</button>
+  <button id="clearJS">Clear JS</button>
+  <button id="saveAll">Save All</button>
+  <button id="loadAll">Load All</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-target="html">HTML</div>
+  <div class="tab" data-target="css">CSS</div>
+  <div class="tab" data-target="js">JavaScript</div>
+</div>
+
+<div class="container">
+  <div id="html" class="editor-section active">
+    <textarea id="htmlCode" placeholder="Write HTML here..."></textarea>
+  </div>
+  <div id="css" class="editor-section">
+    <textarea id="cssCode" placeholder="Write CSS here..."></textarea>
+  </div>
+  <div id="js" class="editor-section">
+    <textarea id="jsCode" placeholder="Write JavaScript here..."></textarea>
+  </div>
+</div>
+
+<h3 style="text-align:center; padding:10px;">Preview</h3>
+<iframe id="preview"></iframe>
+
+<script>
+  const htmlCode = document.getElementById('htmlCode');
+  const cssCode = document.getElementById('cssCode');
+  const jsCode = document.getElementById('jsCode');
+  const preview = document.getElementById('preview');
+
+  const tabs = document.querySelectorAll('.tab');
+
+  // Switch tabs
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelector('.tab.active').classList.remove('active');
+      tab.classList.add('active');
+
+      document.querySelectorAll('.editor-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
+
+  // Update preview with debounce
+  let debounceTimeout;
+  function updatePreview() {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      const html = htmlCode.value;
+      const css = `<style>${cssCode.value}</style>`;
+      const js = `<script>${jsCode.value}<\/script>`;
+      const content = html + css + js;
+      const previewDoc = preview.contentDocument || preview.contentWindow.document;
+      previewDoc.open();
+      previewDoc.write(content);
+      previewDoc.close();
+    }, 300);
+  }
+
+  // Add event listeners for live update
+  [htmlCode, cssCode, jsCode].forEach(editor => {
+    editor.addEventListener('input', updatePreview);
+  });
+
+  // Download current code as HTML file
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const html = htmlCode.value;
+    const css = `<style>${cssCode.value}</style>`;
+    const js = `<script>${jsCode.value}<\/script>`;
+    const content = html + css + js;
+    const blob = new Blob([content], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Clear individual sections
+  document.getElementById('clearHTML').addEventListener('click', () => {
+    htmlCode.value = '';
+    updatePreview();
+  });
+  document.getElementById('clearCSS').addEventListener('click', () => {
+    cssCode.value = '';
+    updatePreview();
+  });
+  document.getElementById('clearJS').addEventListener('click', () => {
+    jsCode.value = '';
+    updatePreview();
+  });
+
+  // Save all code to localStorage
+  document.getElementById('saveAll').addEventListener('click', () => {
+    localStorage.setItem('html', htmlCode.value);
+    localStorage.setItem('css', cssCode.value);
+    localStorage.setItem('js', jsCode.value);
+    alert('All code saved!');
+  });
+
+  // Load all code from localStorage
+  document.getElementById('loadAll').addEventListener('click', () => {
+    const html = localStorage.getItem('html');
+    const css = localStorage.getItem('css');
+    const js = localStorage.getItem('js');
+    if (html !== null) htmlCode.value = html;
+    if (css !== null) cssCode.value = css;
+    if (js !== null) jsCode.value = js;
+    updatePreview();
+  });
+
+  // Load saved code on startup
+  window.addEventListener('load', () => {
+    const html = localStorage.getItem('html');
+    const css = localStorage.getItem('css');
+    const js = localStorage.getItem('js');
+    if (html !== null) htmlCode.value = html;
+    if (css !== null) cssCode.value = css;
+    if (js !== null) jsCode.value = js;
+    updatePreview();
+  });
+</script>
+
+</body>
+  </html>
