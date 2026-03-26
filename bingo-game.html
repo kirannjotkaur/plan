@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎱 BINGO BASH</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg: #0f0c29;
+    --bg2: #1a1540;
+    --card: #1e1952;
+    --accent: #ff6b6b;
+    --accent2: #ffd93d;
+    --accent3: #6bcb77;
+    --accent4: #4d96ff;
+    --accent5: #ff6bcb;
+    --text: #f0eaff;
+    --muted: #9d8ec7;
+    --border: rgba(255,255,255,0.08);
+    --radius: 16px;
+    --glow: 0 0 20px rgba(255,107,107,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(77,150,255,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(255,107,107,0.08) 0%, transparent 60%);
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; padding: 20px; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  /* ===== LOBBY ===== */
+  #lobby { justify-content: center; gap: 32px; }
+
+  .logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(3rem, 10vw, 6rem);
+    background: linear-gradient(135deg, #ff6b6b, #ffd93d, #4d96ff, #6bcb77);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    letter-spacing: 4px;
+    animation: logoPulse 3s ease-in-out infinite;
+    line-height: 1;
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-size: 1rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: -8px;
+  }
+
+  .lobby-cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .lobby-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    flex: 1;
+    min-width: 260px;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .lobby-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+
+  .lobby-card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .input-group label { font-size: 0.8rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+
+  input[type="text"] {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: 1px;
+  }
+  input[type="text"]:focus {
+    border-color: var(--accent4);
+    box-shadow: 0 0 0 3px rgba(77,150,255,0.2);
+  }
+  input[type="text"]::placeholder { color: rgba(255,255,255,0.2); font-weight: 400; }
+
+  .btn {
+    padding: 14px 24px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: white;
+    box-shadow: 0 4px 20px rgba(255,107,107,0.4);
+  }
+  .btn-secondary {
+    background: linear-gradient(135deg, #4d96ff, #845ef7);
+    color: white;
+    box-shadow: 0 4px 20px rgba(77,150,255,0.4);
+  }
+  .btn-success {
+    background: linear-gradient(135deg, #6bcb77, #40c057);
+    color: white;
+    box-shadow: 0 4px 20px rgba(107,203,119,0.4);
+  }
+  .btn-warning {
+    background: linear-gradient(135deg, #ffd93d, #ff9a00);
+    color: #1a1540;
+    box-shadow: 0 4px 20px rgba(255,217,61,0.4);
+  }
+  .btn-danger {
+    background: linear-gradient(135deg, #ff6bcb, #ff3d71);
+    color: white;
+    box-shadow: 0 4px 20px rgba(255,107,203,0.4);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; filter: none; }
+
+  /* ===== WAITING ROOM ===== */
+  #waiting { justify-content: flex-start; align-items: center; padding-top: 40px; gap: 24px; }
+
+  .room-header {
+    text-align: center;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .room-title { font-family: 'Fredoka One', cursive; font-size: 2rem; }
+  .room-code-display {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed rgba(255,255,255,0.2);
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .room-code-display:hover { background: rgba(255,255,255,0.09); }
+  .room-code-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .room-code-value { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--accent2); letter-spacing: 8px; }
+  .copy-hint { font-size: 0.7rem; color: var(--muted); }
+
+  .players-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .players-panel h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .player-list { display: flex; flex-direction: column; gap: 10px; }
+  .player-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .player-item.me { border-color: rgba(77,150,255,0.4); background: rgba(77,150,255,0.06); }
+  .player-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .player-name { font-weight: 700; flex: 1; }
+  .player-badge {
+    font-size: 0.7rem; padding: 3px 8px;
+    border-radius: 20px; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .badge-host { background: rgba(255,217,61,0.2); color: var(--accent2); }
+  .badge-ready { background: rgba(107,203,119,0.2); color: var(--accent3); }
+  .badge-you { background: rgba(77,150,255,0.2); color: var(--accent4); }
+
+  .empty-slot {
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .waiting-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 480px; }
+  .waiting-actions .btn { flex: 1; min-width: 140px; }
+
+  .waiting-info {
+    font-size: 0.85rem; color: var(--muted);
+    text-align: center; max-width: 360px;
+    line-height: 1.6;
+  }
+
+  /* ===== GAME SCREEN ===== */
+  #game { justify-content: flex-start; padding: 16px; gap: 16px; max-width: 900px; margin: 0 auto; width: 100%; }
+
+  .game-header {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .game-title { font-family: 'Fredoka One', cursive; font-size: 1.5rem; }
+
+  .caller-area {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    width: 100%;
+    display: flex; align-items: center; gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .current-call {
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 100px;
+  }
+  .call-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .call-ball {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    box-shadow: 0 0 30px rgba(255,107,107,0.5);
+    animation: ballBounce 0.4s cubic-bezier(0.36,0.07,0.19,0.97) both;
+    position: relative;
+    overflow: hidden;
+  }
+  .call-ball::after {
+    content: '';
+    position: absolute;
+    top: 8px; left: 12px;
+    width: 20px; height: 12px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+  }
+  @keyframes ballBounce {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    60% { transform: scale(1.2) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .called-history {
+    flex: 1;
+    min-width: 0;
+  }
+  .called-history-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .called-balls {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    max-height: 80px; overflow-y: auto;
+  }
+  .mini-ball {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .caller-controls { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+
+  /* Bingo Card */
+  .bingo-section { width: 100%; }
+  .bingo-section-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .bingo-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .bingo-header-row {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    background: linear-gradient(135deg, rgba(255,107,107,0.3), rgba(77,150,255,0.3));
+  }
+  .bingo-header-cell {
+    padding: 14px 4px;
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+  }
+
+  .bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    background: rgba(0,0,0,0.3);
+    padding: 2px;
+  }
+
+  .bingo-cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(0.9rem, 3vw, 1.2rem);
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    border-radius: 6px;
+    position: relative;
+    user-select: none;
+  }
+  .bingo-cell:hover:not(.marked):not(.free) { background: rgba(255,255,255,0.1); transform: scale(1.05); }
+  .bingo-cell.called { background: rgba(255,217,61,0.1); }
+  .bingo-cell.marked {
+    background: linear-gradient(135deg, rgba(107,203,119,0.35), rgba(64,192,87,0.2));
+    color: var(--accent3);
+  }
+  .bingo-cell.marked::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    background: rgba(107,203,119,0.25);
+    border: 2px solid rgba(107,203,119,0.5);
+  }
+  .bingo-cell.free {
+    background: linear-gradient(135deg, rgba(255,107,107,0.3), rgba(255,142,83,0.2));
+    color: var(--accent);
+    cursor: default;
+    font-size: 0.7rem;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .bingo-cell.winning { animation: winCell 0.5s ease-in-out infinite alternate; }
+  @keyframes winCell {
+    from { background: rgba(255,217,61,0.3); box-shadow: inset 0 0 10px rgba(255,217,61,0.3); }
+    to { background: rgba(255,217,61,0.6); box-shadow: inset 0 0 20px rgba(255,217,61,0.5); }
+  }
+
+  .bingo-btn {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    display: block;
+    padding: 16px;
+    font-size: 1.3rem;
+  }
+
+  /* Scoreboard */
+  .scoreboard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    width: 100%;
+  }
+  .scoreboard h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .score-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .score-item {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.04);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem; font-weight: 700;
+    border: 1px solid var(--border);
+  }
+  .score-item.me { border-color: rgba(77,150,255,0.4); }
+
+  /* ===== WIN SCREEN ===== */
+  #win-screen { justify-content: center; text-align: center; gap: 24px; }
+  .win-emoji { font-size: 5rem; animation: winBounce 0.6s ease-in-out infinite alternate; }
+  @keyframes winBounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+  .win-title { font-family: 'Fredoka One', cursive; font-size: 3rem; background: linear-gradient(135deg, #ffd93d, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .win-subtitle { color: var(--muted); font-size: 1.1rem; }
+
+  /* Confetti */
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden; }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    top: -20px;
+    animation: confettiFall linear forwards;
+    border-radius: 2px;
+  }
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: #2d2a5e; border: 1px solid rgba(255,255,255,0.1);
+    padding: 14px 24px; border-radius: 50px;
+    font-weight: 700; font-size: 0.95rem;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 1000; white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Colors */
+  .col-b { background: linear-gradient(135deg, #4d96ff, #339af0); }
+  .col-i { background: linear-gradient(135deg, #ff6bcb, #e64980); }
+  .col-n { background: linear-gradient(135deg, #ffd93d, #fd7e14); }
+  .col-g { background: linear-gradient(135deg, #6bcb77, #2f9e44); }
+  .col-o { background: linear-gradient(135deg, #ff6b6b, #c92a2a); }
+  .col-b-text { color: #4d96ff; }
+  .col-i-text { color: #ff6bcb; }
+  .col-n-text { color: #ffd93d; }
+  .col-g-text { color: #6bcb77; }
+  .col-o-text { color: #ff6b6b; }
+
+  .badge { display: inline-flex; align-items: center; gap: 6px; }
+
+  /* Divider */
+  .divider { width: 100%; max-width: 480px; border: none; border-top: 1px solid var(--border); }
+
+  /* Number counter */
+  .num-counter {
+    font-size: 0.8rem; color: var(--muted); text-align: center;
+  }
+  .num-counter span { color: var(--accent2); font-weight: 800; }
+
+  /* Auto-call toggle */
+  .auto-row { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+  .toggle {
+    width: 44px; height: 24px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    border: 1px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+  .toggle.on { background: rgba(107,203,119,0.5); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    transition: left 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .toggle.on::after { left: 22px; }
+
+  @media (max-width: 500px) {
+    .lobby-card { min-width: 100%; }
+    .call-ball { width: 64px; height: 64px; font-size: 1.4rem; }
+    .waiting-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOBBY ===== -->
+<div id="lobby" class="screen active">
+  <div style="text-align:center">
+    <div class="logo">BINGO</div>
+    <div class="tagline">✨ Bash Edition ✨</div>
+  </div>
+
+  <div class="lobby-cards">
+    <div class="lobby-card">
+      <h2>🎉 Create Room</h2>
+      <div class="input-group">
+        <label>Your Name</label>
+        <input type="text" id="create-name" placeholder="Enter your name" maxlength="16">
+      </div>
+      <button class="btn btn-primary" onclick="createRoom()">Create & Host</button>
+    </div>
+
+    <div class="lobby-card">
+      <h2>🔗 Join Room</h2>
+      <div class="input-group">
+        <label>Your Name</label>
+        <input type="text" id="join-name" placeholder="Enter your name" maxlength="16">
+      </div>
+      <div class="input-group">
+        <label>Room Code</label>
+        <input type="text" id="join-code" placeholder="e.g. XKCD42" maxlength="6" style="text-transform:uppercase;letter-spacing:4px">
+      </div>
+      <button class="btn btn-secondary" onclick="joinRoom()">Join Game</button>
+    </div>
+  </div>
+
+  <div style="color:var(--muted);font-size:0.8rem;text-align:center;max-width:320px;line-height:1.8">
+    2–5 players per room • Share the room code to invite friends
+  </div>
+</div>
+
+<!-- ===== WAITING ROOM ===== -->
+<div id="waiting" class="screen">
+  <div class="room-header">
+    <div class="room-title">🎱 Waiting Room</div>
+    <div style="color:var(--muted);font-size:0.85rem">Share the code below to invite players</div>
+    <div class="room-code-display" onclick="copyCode()" title="Click to copy">
+      <div>
+        <div class="room-code-label">Room Code</div>
+        <div class="room-code-value" id="display-code">——</div>
+      </div>
+      <div class="copy-hint">📋 tap to copy</div>
+    </div>
+  </div>
+
+  <div class="players-panel">
+    <h3>👥 Players <span id="player-count" style="color:var(--muted);font-size:0.9rem;font-weight:400">(0/5)</span></h3>
+    <div class="player-list" id="player-list"></div>
+  </div>
+
+  <div class="waiting-actions">
+    <button class="btn btn-success" id="start-btn" onclick="startGame()" disabled>🎯 Start Game</button>
+    <button class="btn btn-danger" onclick="leaveRoom()">🚪 Leave</button>
+  </div>
+
+  <div class="waiting-info" id="waiting-info">Waiting for more players to join... (minimum 2 needed)</div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game" class="screen">
+  <div class="game-header">
+    <div class="game-title">🎱 BINGO BASH</div>
+    <div class="num-counter">Called: <span id="called-count">0</span> / 75</div>
+    <button class="btn btn-danger" style="padding:8px 16px;font-size:0.9rem" onclick="leaveRoom()">🚪 Leave</button>
+  </div>
+
+  <!-- Caller Area -->
+  <div class="caller-area">
+    <div class="current-call">
+      <div class="call-label">Current</div>
+      <div class="call-ball col-b" id="current-ball" style="background:linear-gradient(135deg,#555,#333);box-shadow:none">—</div>
+    </div>
+    <div class="called-history">
+      <div class="called-history-label">History</div>
+      <div class="called-balls" id="called-balls"></div>
+    </div>
+    <div class="caller-controls" id="host-controls" style="display:none">
+      <button class="btn btn-warning" id="call-btn" onclick="callNumber()" style="white-space:nowrap;padding:12px 18px">🎲 Call Number</button>
+      <div class="auto-row">
+        <div class="toggle" id="auto-toggle" onclick="toggleAuto()"></div>
+        <span>Auto-call</span>
+      </div>
+    </div>
+    <div id="guest-waiting" style="display:none;color:var(--muted);font-size:0.85rem;font-style:italic">
+      ⏳ Waiting for host to call...
+    </div>
+  </div>
+
+  <!-- Bingo Card -->
+  <div class="bingo-section">
+    <div class="bingo-section-title">🃏 Your Card</div>
+    <div class="bingo-card">
+      <div class="bingo-header-row">
+        <div class="bingo-header-cell col-b-text">B</div>
+        <div class="bingo-header-cell col-i-text">I</div>
+        <div class="bingo-header-cell col-n-text">N</div>
+        <div class="bingo-header-cell col-g-text">G</div>
+        <div class="bingo-header-cell col-o-text">O</div>
+      </div>
+      <div class="bingo-grid" id="bingo-grid"></div>
+    </div>
+  </div>
+
+  <!-- Scoreboard -->
+  <div class="scoreboard">
+    <h3>🏆 Players</h3>
+    <div class="score-list" id="score-list"></div>
+  </div>
+
+  <!-- BINGO Button -->
+  <button class="btn btn-success bingo-btn" onclick="callBingo()" id="bingo-call-btn">
+    🎉 BINGO!
+  </button>
+</div>
+
+<!-- ===== WIN SCREEN ===== -->
+<div id="win-screen" class="screen">
+  <div class="win-emoji" id="win-emoji">🏆</div>
+  <div class="win-title" id="win-title">BINGO!</div>
+  <div class="win-subtitle" id="win-subtitle">Player wins!</div>
+  <button class="btn btn-primary" onclick="playAgain()" style="margin-top:8px;padding:16px 40px;font-size:1.2rem">🔄 Play Again</button>
+  <button class="btn btn-secondary" onclick="leaveRoom()" style="padding:14px 32px">🏠 Lobby</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const AVATARS = ['🐶','🦊','🐱','🐸','🐼','🦁','🐯','🐨','🐺','🦝','🦋','🐝'];
+const COL_COLORS = ['col-b','col-i','col-n','col-g','col-o'];
+const LETTER_COLORS = ['col-b-text','col-i-text','col-n-text','col-g-text','col-o-text'];
+
+let state = {
+  myName: '',
+  myId: '',
+  roomCode: '',
+  isHost: false,
+  players: [],      // [{id, name, avatar}]
+  myCard: [],       // 5x5 array of numbers (0 = FREE)
+  markedCells: [],  // flat array of marked indices
+  calledNumbers: [],
+  gameStarted: false,
+  autoCall: false,
+  autoTimer: null,
+};
+
+// ============================================================
+// ROOM SIMULATION (localStorage-based multiplayer simulation)
+// Since we're in a single page, we simulate multi-tab/window play
+// via localStorage events. Works across tabs on same browser!
+// ============================================================
+
+function getRoomData(code) {
+  try { return JSON.parse(localStorage.getItem('bingo_room_' + code)) || null; } catch { return null; }
+}
+function setRoomData(code, data) {
+  localStorage.setItem('bingo_room_' + code, JSON.stringify(data));
+}
+function removeRoomData(code) {
+  localStorage.removeItem('bingo_room_' + code);
+}
+
+function genId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+// ============================================================
+// BINGO CARD GENERATION
+// ============================================================
+function generateCard() {
+  // B:1-15, I:16-30, N:31-45, G:46-60, O:61-75
+  const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+  const card = [];
+  for (let col = 0; col < 5; col++) {
+    const [min, max] = ranges[col];
+    const nums = shuffleArray(range(min, max)).slice(0, 5);
+    card.push(nums);
+  }
+  // card[col][row]
+  // Center is FREE
+  card[2][2] = 0;
+  return card;
+}
+
+function range(min, max) {
+  const arr = [];
+  for (let i = min; i <= max; i++) arr.push(i);
+  return arr;
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ============================================================
+// SCREENS
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============================================================
+// LOBBY ACTIONS
+// ============================================================
+function createRoom() {
+  const name = document.getElementById('create-name').value.trim();
+  if (!name) return toast('Please enter your name!', '⚠️');
+
+  const code = genCode();
+  const myId = genId();
+  const avatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+
+  const room = {
+    code,
+    hostId: myId,
+    players: [{ id: myId, name, avatar }],
+    calledNumbers: [],
+    gameStarted: false,
+    cards: {},
+    timestamp: Date.now(),
+  };
+
+  setRoomData(code, room);
+
+  state.myName = name;
+  state.myId = myId;
+  state.roomCode = code;
+  state.isHost = true;
+  state.players = room.players;
+
+  enterWaitingRoom();
+}
+
+function joinRoom() {
+  const name = document.getElementById('join-name').value.trim();
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+
+  if (!name) return toast('Please enter your name!', '⚠️');
+  if (!code || code.length !== 6) return toast('Enter a valid 6-character room code', '⚠️');
+
+  const room = getRoomData(code);
+  if (!room) return toast('Room not found! Check the code.', '❌');
+  if (room.gameStarted) return toast('Game already in progress!', '🚫');
+  if (room.players.length >= 5) return toast('Room is full! (Max 5 players)', '🚫');
+
+  const myId = genId();
+  const avatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+
+  room.players.push({ id: myId, name, avatar });
+  setRoomData(code, room);
+
+  state.myName = name;
+  state.myId = myId;
+  state.roomCode = code;
+  state.isHost = false;
+  state.players = room.players;
+
+  enterWaitingRoom();
+}
+
+// ============================================================
+// WAITING ROOM
+// ============================================================
+let pollInterval = null;
+
+function enterWaitingRoom() {
+  showScreen('waiting');
+  document.getElementById('display-code').textContent = state.roomCode;
+  renderWaiting();
+  startPolling();
+}
+
+function startPolling() {
+  clearInterval(pollInterval);
+  pollInterval = setInterval(pollRoom, 800);
+}
+
+function stopPolling() {
+  clearInterval(pollInterval);
+}
+
+function pollRoom() {
+  const room = getRoomData(state.roomCode);
+  if (!room) {
+    if (state.gameStarted) return; // game already running locally
+    toast('Room closed', '⚠️');
+    leaveRoom();
+    return;
+  }
+
+  state.players = room.players;
+
+  // Check if I was removed
+  if (!room.players.find(p => p.id === state.myId)) {
+    toast('You were removed from the room', '🚫');
+    leaveRoom();
+    return;
+  }
+
+  if (room.gameStarted && !state.gameStarted) {
+    // Game just started, load my card
+    state.calledNumbers = room.calledNumbers || [];
+    const myCardData = room.cards[state.myId];
+    if (myCardData) {
+      state.myCard = myCardData;
+    }
+    state.gameStarted = true;
+    enterGame(room);
+    return;
+  }
+
+  if (state.gameStarted) {
+    // Update called numbers
+    const newCalls = room.calledNumbers || [];
+    if (newCalls.length > state.calledNumbers.length) {
+      state.calledNumbers = newCalls;
+      updateCalledDisplay();
+      autoMarkCalledNumbers();
+    }
+    // Update players
+    renderScoreboard(room.players);
+    return;
+  }
+
+  renderWaiting();
+}
+
+function renderWaiting() {
+  const room = getRoomData(state.roomCode);
+  if (!room) return;
+  const players = room.players;
+
+  document.getElementById('player-count').textContent = `(${players.length}/5)`;
+
+  const list = document.getElementById('player-list');
+  list.innerHTML = '';
+
+  players.forEach(p => {
+    const isMe = p.id === state.myId;
+    const isHost = p.id === room.hostId;
+    const div = document.createElement('div');
+    div.className = 'player-item' + (isMe ? ' me' : '');
+    div.innerHTML = `
+      <div class="player-avatar" style="background:rgba(255,255,255,0.08)">${p.avatar}</div>
+      <div class="player-name">${escHtml(p.name)}</div>
+      <div style="display:flex;gap:6px">
+        ${isHost ? '<span class="player-badge badge-host">Host</span>' : ''}
+        ${isMe ? '<span class="player-badge badge-you">You</span>' : ''}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  // Empty slots
+  for (let i = players.length; i < 5; i++) {
+    const div = document.createElement('div');
+    div.className = 'empty-slot';
+    div.textContent = `Waiting for player ${i + 1}...`;
+    list.appendChild(div);
+  }
+
+  // Start button (host only)
+  const startBtn = document.getElementById('start-btn');
+  const info = document.getElementById('waiting-info');
+
+  if (state.isHost) {
+    startBtn.style.display = '';
+    if (players.length >= 2) {
+      startBtn.disabled = false;
+      info.textContent = `Ready! ${players.length} players joined. Start when ready!`;
+    } else {
+      startBtn.disabled = true;
+      info.textContent = 'Waiting for at least 1 more player to join...';
+    }
+  } else {
+    startBtn.style.display = 'none';
+    info.textContent = 'Waiting for the host to start the game...';
+  }
+}
+
+function copyCode() {
+  const code = state.roomCode;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code).then(() => toast('Code copied! ' + code, '📋'));
+  } else {
+    toast('Room Code: ' + code, '📋');
+  }
+}
+
+// ============================================================
+// START GAME (host only)
+// ============================================================
+function startGame() {
+  const room = getRoomData(state.roomCode);
+  if (!room) return;
+  if (room.players.length < 2) return toast('Need at least 2 players!', '⚠️');
+
+  // Generate cards for all players
+  const cards = {};
+  room.players.forEach(p => {
+    cards[p.id] = generateCard();
+  });
+
+  room.gameStarted = true;
+  room.cards = cards;
+  room.calledNumbers = [];
+  setRoomData(state.roomCode, room);
+
+  state.myCard = cards[state.myId];
+  state.calledNumbers = [];
+  state.gameStarted = true;
+
+  enterGame(room);
+}
+
+// ============================================================
+// GAME
+// ============================================================
+function enterGame(room) {
+  stopPolling();
+  showScreen('game');
+  renderBingoCard();
+  renderScoreboard(room.players);
+  updateCalledDisplay();
+  document.getElementById('called-count').textContent = state.calledNumbers.length;
+
+  if (state.isHost) {
+    document.getElementById('host-controls').style.display = '';
+    document.getElementById('guest-waiting').style.display = 'none';
+  } else {
+    document.getElementById('host-controls').style.display = 'none';
+    document.getElementById('guest-waiting').style.display = '';
+    startPolling();
+  }
+}
+
+function renderBingoCard() {
+  const grid = document.getElementById('bingo-grid');
+  grid.innerHTML = '';
+  state.markedCells = state.markedCells || [];
+
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
+      const num = state.myCard[col][row];
+      const idx = row * 5 + col;
+      const cell = document.createElement('div');
+      cell.className = 'bingo-cell';
+      cell.id = 'cell-' + idx;
+
+      if (num === 0) {
+        cell.classList.add('free', 'marked');
+        cell.textContent = 'FREE';
+        state.markedCells.push(idx);
+      } else {
+        cell.textContent = num;
+        cell.onclick = () => toggleCell(idx, num);
+      }
+
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function toggleCell(idx, num) {
+  // Only mark if number has been called
+  if (!state.calledNumbers.includes(num)) {
+    toast('That number hasn\'t been called yet!', '🚫');
+    return;
+  }
+  const cell = document.getElementById('cell-' + idx);
+  if (state.markedCells.includes(idx)) {
+    state.markedCells = state.markedCells.filter(i => i !== idx);
+    cell.classList.remove('marked');
+  } else {
+    state.markedCells.push(idx);
+    cell.classList.add('marked');
+  }
+}
+
+function autoMarkCalledNumbers() {
+  if (!state.myCard) return;
+  const lastNum = state.calledNumbers[state.calledNumbers.length - 1];
+  if (!lastNum) return;
+
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
+      const num = state.myCard[col][row];
+      const idx = row * 5 + col;
+      const cell = document.getElementById('cell-' + idx);
+      if (cell && num === lastNum) {
+        cell.classList.add('called');
+      }
+    }
+  }
+}
+
+// ============================================================
+// CALL NUMBER (host)
+// ============================================================
+function callNumber() {
+  const room = getRoomData(state.roomCode);
+  if (!room) return;
+
+  const all = range(1, 75);
+  const remaining = all.filter(n => !room.calledNumbers.includes(n));
+  if (remaining.length === 0) {
+    toast('All 75 numbers called!', '😮');
+    return;
+  }
+
+  const num = remaining[Math.floor(Math.random() * remaining.length)];
+  room.calledNumbers.push(num);
+  setRoomData(state.roomCode, room);
+  state.calledNumbers = room.calledNumbers;
+
+  updateCalledDisplay();
+  autoMarkCalledNumbers();
+  document.getElementById('called-count').textContent = state.calledNumbers.length;
+}
+
+function toggleAuto() {
+  state.autoCall = !state.autoCall;
+  const toggle = document.getElementById('auto-toggle');
+  toggle.classList.toggle('on', state.autoCall);
+
+  if (state.autoCall) {
+    state.autoTimer = setInterval(() => {
+      const room = getRoomData(state.roomCode);
+      if (!room || room.calledNumbers.length >= 75) {
+        state.autoCall = false;
+        toggle.classList.remove('on');
+        clearInterval(state.autoTimer);
+        return;
+      }
+      callNumber();
+    }, 3000);
+    toast('Auto-call ON (every 3s)', '🤖');
+  } else {
+    clearInterval(state.autoTimer);
+    toast('Auto-call OFF', '⏸️');
+  }
+}
+
+function updateCalledDisplay() {
+  const nums = state.calledNumbers;
+  if (!nums.length) return;
+
+  // Current ball
+  const last = nums[nums.length - 1];
+  const colIdx = getColIndex(last);
+  const colClass = COL_COLORS[colIdx];
+  const letter = 'BINGO'[colIdx];
+
+  const ball = document.getElementById('current-ball');
+  ball.className = 'call-ball ' + colClass;
+  ball.textContent = letter + last;
+  // Retrigger animation
+  ball.style.animation = 'none';
+  ball.offsetWidth;
+  ball.style.animation = '';
+
+  // History
+  const hist = document.getElementById('called-balls');
+  hist.innerHTML = '';
+  [...nums].reverse().slice(0, 30).forEach(n => {
+    const ci = getColIndex(n);
+    const div = document.createElement('div');
+    div.className = 'mini-ball ' + COL_COLORS[ci];
+    div.textContent = n;
+    div.title = 'BINGO'[ci] + n;
+    hist.appendChild(div);
+  });
+
+  document.getElementById('called-count').textContent = nums.length;
+}
+
+function getColIndex(num) {
+  if (num <= 15) return 0;
+  if (num <= 30) return 1;
+  if (num <= 45) return 2;
+  if (num <= 60) return 3;
+  return 4;
+}
+
+// ============================================================
+// BINGO CHECK
+// ============================================================
+function callBingo() {
+  if (!checkBingo()) {
+    toast('No BINGO yet! Keep playing 😅', '🔍');
+    return;
+  }
+  // Winner!
+  highlightWinningCells();
+  announceWinner(state.myName);
+
+  // Save winner to room
+  const room = getRoomData(state.roomCode);
+  if (room) {
+    room.winner = { id: state.myId, name: state.myName };
+    setRoomData(state.roomCode, room);
+  }
+}
+
+function checkBingo() {
+  const marked = new Set(state.markedCells);
+
+  // Check rows
+  for (let row = 0; row < 5; row++) {
+    let win = true;
+    for (let col = 0; col < 5; col++) {
+      if (!marked.has(row * 5 + col)) { win = false; break; }
+    }
+    if (win) return true;
+  }
+
+  // Check columns
+  for (let col = 0; col < 5; col++) {
+    let win = true;
+    for (let row = 0; row < 5; row++) {
+      if (!marked.has(row * 5 + col)) { win = false; break; }
+    }
+    if (win) return true;
+  }
+
+  // Check diagonals
+  const diag1 = [0,6,12,18,24];
+  const diag2 = [4,8,12,16,20];
+  if (diag1.every(i => marked.has(i))) return true;
+  if (diag2.every(i => marked.has(i))) return true;
+
+  return false;
+}
+
+function getWinningLines() {
+  const marked = new Set(state.markedCells);
+  const lines = [];
+
+  for (let row = 0; row < 5; row++) {
+    const line = [];
+    for (let col = 0; col < 5; col++) line.push(row * 5 + col);
+    if (line.every(i => marked.has(i))) lines.push(line);
+  }
+  for (let col = 0; col < 5; col++) {
+    const line = [];
+    for (let row = 0; row < 5; row++) line.push(row * 5 + col);
+    if (line.every(i => marked.has(i))) lines.push(line);
+  }
+  const d1 = [0,6,12,18,24]; if (d1.every(i => marked.has(i))) lines.push(d1);
+  const d2 = [4,8,12,16,20]; if (d2.every(i => marked.has(i))) lines.push(d2);
+  return lines;
+}
+
+function highlightWinningCells() {
+  const lines = getWinningLines();
+  lines.forEach(line => {
+    line.forEach(idx => {
+      const cell = document.getElementById('cell-' + idx);
+      if (cell) cell.classList.add('winning');
+    });
+  });
+}
+
+function announceWinner(name) {
+  const isMe = name === state.myName;
+  stopPolling();
+  clearInterval(state.autoTimer);
+
+  document.getElementById('win-emoji').textContent = isMe ? '🏆' : '🎉';
+  document.getElementById('win-title').textContent = isMe ? 'BINGO!' : name + ' WINS!';
+  document.getElementById('win-subtitle').textContent = isMe ? 'You got BINGO! 🎊' : 'Better luck next time!';
+
+  if (isMe) launchConfetti();
+  setTimeout(() => showScreen('win-screen'), 600);
+}
+
+// ============================================================
+// SCOREBOARD
+// ============================================================
+function renderScoreboard(players) {
+  const list = document.getElementById('score-list');
+  if (!list) return;
+  list.innerHTML = '';
+  players.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'score-item' + (p.id === state.myId ? ' me' : '');
+    div.innerHTML = `<span>${p.avatar}</span><span>${escHtml(p.name)}</span>${p.id === state.myId ? '<span style="font-size:0.7rem;color:var(--accent4)">(You)</span>' : ''}`;
+    list.appendChild(div);
+  });
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function launchConfetti() {
+  const container = document.getElementById('confetti');
+  container.innerHTML = '';
+  const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6bcb','#fff'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (Math.random() * 10 + 6) + 'px';
+    piece.style.height = (Math.random() * 10 + 6) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    container.appendChild(piece);
+  }
+  setTimeout(() => { container.innerHTML = ''; }, 5000);
+}
+
+// ============================================================
+// LEAVE / PLAY AGAIN
+// ============================================================
+function leaveRoom() {
+  stopPolling();
+  clearInterval(state.autoTimer);
+
+  const room = getRoomData(state.roomCode);
+  if (room) {
+    room.players = room.players.filter(p => p.id !== state.myId);
+    if (room.players.length === 0) {
+      removeRoomData(state.roomCode);
+    } else {
+      if (room.hostId === state.myId && room.players.length > 0) {
+        room.hostId = room.players[0].id;
+      }
+      setRoomData(state.roomCode, room);
+    }
+  }
+
+  // Reset state
+  state = { myName:'', myId:'', roomCode:'', isHost:false, players:[], myCard:[], markedCells:[], calledNumbers:[], gameStarted:false, autoCall:false, autoTimer:null };
+  document.getElementById('create-name').value = '';
+  document.getElementById('join-name').value = '';
+  document.getElementById('join-code').value = '';
+  document.getElementById('confetti').innerHTML = '';
+  showScreen('lobby');
+}
+
+function playAgain() {
+  stopPolling();
+  clearInterval(state.autoTimer);
+
+  // Reset game state but keep room
+  state.gameStarted = false;
+  state.calledNumbers = [];
+  state.myCard = [];
+  state.markedCells = [];
+
+  const room = getRoomData(state.roomCode);
+  if (room) {
+    room.gameStarted = false;
+    room.calledNumbers = [];
+    room.cards = {};
+    room.winner = null;
+    setRoomData(state.roomCode, room);
+    enterWaitingRoom();
+  } else {
+    showScreen('lobby');
+  }
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function toast(msg, emoji = '✅') {
+  const el = document.getElementById('toast');
+  el.textContent = emoji + ' ' + msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// Listen for storage events (cross-tab multiplayer!)
+window.addEventListener('storage', e => {
+  if (e.key === 'bingo_room_' + state.roomCode && state.roomCode) {
+    if (!state.gameStarted) {
+      renderWaiting();
+    } else {
+      const room = getRoomData(state.roomCode);
+      if (room) {
+        if (room.winner && !document.getElementById('win-screen').classList.contains('active')) {
+          announceWinner(room.winner.name);
+        }
+        const newCalls = room.calledNumbers || [];
+        if (newCalls.length > state.calledNumbers.length) {
+          state.calledNumbers = newCalls;
+          updateCalledDisplay();
+          autoMarkCalledNumbers();
+        }
+        renderScoreboard(room.players);
+      }
+    }
+  }
+});
+
+// Clean up old rooms on page load
+(function cleanOldRooms() {
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('bingo_room_'));
+  const now = Date.now();
+  keys.forEach(k => {
+    try {
+      const d = JSON.parse(localStorage.getItem(k));
+      if (d && d.timestamp && (now - d.timestamp) > 3600000) localStorage.removeItem(k);
+    } catch {}
+  });
+})();
+
+// Enter name with Enter key
+document.getElementById('create-name').addEventListener('keydown', e => { if(e.key==='Enter') createRoom(); });
+document.getElementById('join-code').addEventListener('keydown', e => { if(e.key==='Enter') joinRoom(); });
+document.getElementById('join-name').addEventListener('keydown', e => { if(e.key==='Enter') joinRoom(); });
+</script>
+</body>
+</html>
