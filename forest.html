@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silent Forest Focus</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at center, #0b1a13, #020403);
+  color: #cfe8d5;
+  overflow: hidden;
+}
+
+/* Fog Layer */
+.fog {
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.02), transparent);
+  animation: fogMove 60s linear infinite;
+}
+
+@keyframes fogMove {
+  0% { transform: translate(0,0); }
+  100% { transform: translate(-50%, -50%); }
+}
+
+/* Center UI */
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+input {
+  padding: 10px;
+  border: none;
+  background: rgba(255,255,255,0.05);
+  color: #dfffe6;
+  outline: none;
+  border-radius: 8px;
+  text-align: center;
+}
+
+button {
+  margin-top: 10px;
+  padding: 8px 20px;
+  border: none;
+  background: rgba(100,255,150,0.1);
+  color: #a6ffbf;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: rgba(100,255,150,0.3);
+}
+
+/* Tree */
+.tree {
+  width: 40px;
+  height: 40px;
+  background: #2ecc71;
+  border-radius: 50%;
+  margin: 20px auto;
+  transition: all 1s ease;
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+}
+
+.grow1 { transform: scale(1.5); }
+.grow2 { transform: scale(2.2); }
+.grow3 { transform: scale(3); }
+
+/* Timer */
+.timer {
+  margin-top: 10px;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+/* Fireflies */
+.firefly {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: #aaffcc;
+  border-radius: 50%;
+  animation: float 5s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(-50px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.3; }
+}
+
+/* Hidden */
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="fog"></div>
+
+<div class="container" id="setup">
+  <h2>Enter your task</h2>
+  <input id="taskInput" placeholder="One task only..." />
+  <br>
+  <input id="timeInput" type="number" placeholder="Minutes (default 25)" />
+  <br>
+  <button onclick="startFocus()">Enter Forest</button>
+</div>
+
+<div class="container hidden" id="focusMode">
+  <div class="tree" id="tree"></div>
+  <div class="timer" id="timer"></div>
+  <div id="energy"></div>
+</div>
+
+<script>
+let timeLeft;
+let timerInterval;
+let stage = 0;
+let energy = 0;
+
+function startFocus() {
+  let task = document.getElementById("taskInput").value;
+  let minutes = document.getElementById("timeInput").value || 25;
+
+  if (!task) return alert("Enter one task.");
+
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("focusMode").classList.remove("hidden");
+
+  timeLeft = minutes * 60;
+  updateTimer();
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    growTree();
+
+    if (Math.random() < 0.05) randomReward();
+
+    if (timeLeft <= 0) finishSession();
+  }, 1000);
+}
+
+function updateTimer() {
+  let m = Math.floor(timeLeft / 60);
+  let s = timeLeft % 60;
+  document.getElementById("timer").innerText = `${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
+function growTree() {
+  let tree = document.getElementById("tree");
+
+  if (timeLeft % 60 === 0 && stage < 3) {
+    stage++;
+    tree.classList.add("grow" + stage);
+  }
+}
+
+function randomReward() {
+  let firefly = document.createElement("div");
+  firefly.classList.add("firefly");
+
+  firefly.style.left = Math.random() * window.innerWidth + "px";
+  firefly.style.top = Math.random() * window.innerHeight + "px";
+
+  document.body.appendChild(firefly);
+
+  setTimeout(() => firefly.remove(), 5000);
+}
+
+function finishSession() {
+  clearInterval(timerInterval);
+  energy += 10;
+  document.getElementById("energy").innerText = "Focus Energy: " + energy;
+
+  let tree = document.getElementById("tree");
+  tree.style.background = "#aaffaa";
+  tree.style.boxShadow = "0 0 30px #aaffaa";
+
+  alert("Session complete. Your forest grows.");
+}
+
+/* Loss Aversion */
+window.onblur = () => {
+  let tree = document.getElementById("tree");
+  if (tree) {
+    tree.style.transform = "scale(0.8)";
+  }
+};
+
+window.onfocus = () => {
+  let tree = document.getElementById("tree");
+  if (tree) {
+    tree.style.transform = "";
+  }
+};
+</script>
+
+</body>
+</html>
