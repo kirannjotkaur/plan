@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tic Tac Toe - Video Call</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<style>
+ .cell { transition: transform 0.1s, background 0.3s; }
+ .cell:active { transform: scale(0.95); }
+ .win { animation: pulse 0.8s infinite; }
+  @keyframes pulse { 0%,100%{ background:#bbf7d0 } 50%{ background:#86efac } }
+</style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 to-blue-100 min-h-screen flex flex-col items-center p-4 font-sans">
+
+<div id="app" class="w-full max-w-md"></div>
+
+<script>
+// ===== CONFIG =====
+const SERVER = "https://tictactoe-socket-demo.onrender.com"; // public demo (or use your own http://localhost:3001)
+const socket = io(SERVER);
+let roomId = '', mySymbol = '', myName = '', localStream = null, pc = null;
+const app = document.getElementById('app');
+
+// ===== SOUNDS (base64, no files) =====
+const clickSnd = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");
+const winSnd = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");
+
+// ===== UI RENDER =====
+function renderLobby() {
+  app.innerHTML = `
+    <div class="bg-white p-6 rounded-2xl shadow-xl">
+      <h1 class="text-3xl font-bold text-center mb-4">Tic Tac Toe + Video</h1>
+      <input id="name" placeholder="Your name" class="w-full p-3 border rounded-lg mb-3" />
+      <button onclick="createRoom()" class="w-full p-3 bg-blue-500 text-white rounded-lg mb-2 hover:bg-blue-600">Create Room</button>
+      <div class="flex gap-2">
+        <input id="code" placeholder="Room code" class="flex-1 p-3 border rounded-lg" />
+        <button onclick="joinRoom()" class="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600">Join</button>
+      </div>
+    </div>`;
+}
+
+function renderGame(state) {
+  const { board, turn, status, players, winner } = state;
+  const opponent = players.find(p => p.symbol!== mySymbol);
+  const isMyTurn = turn === mySymbol && status === 'playing';
+
+  app.innerHTML = `
+    <div class="text-center mb-2">
+      <h1 class="text-2xl font-bold">Room: ${roomId} <button onclick="navigator.clipboard.writeText('${roomId}')" class="text-sm bg-gray-200 px-2 rounded">Copy</button></h1>
+      <p class="text-gray-600">You are <span class="font-bold ${mySymbol==='X'?'text-blue-500':'text-red-500'}">${mySymbol}</span></p>
+    </div>
+
+    <div class="flex justify-center gap-4 mb-4">
+      <video id="localVideo" autoplay muted playsinline class="w-32 h-24 bg-black rounded-lg object-cover"></video>
+      <video id="remoteVideo" autoplay playsinline class="w-32 h-24 bg-black rounded-lg object-cover"></video>
+    </div>
+
+    <div class="text-center mb-3 font-semibold text-lg">
+      ${status==='waiting'?'Waiting for opponent...':''}
+      ${status==='playing'?(isMyTurn?'Your turn!':"Opponent's turn"):''}
+      ${status==='finished'?(winner===mySymbol?'You win! 🎉':'You lose'):''}
+      ${status==='draw'?"It's a draw!":''}
+    </div>
+
+    <div class="grid grid-cols-3 gap-2 w-72 h-72 mx-auto">
+      ${board.map((v,i)=>`
+        <button onclick="makeMove(${i})"
+          class="cell bg-white rounded-xl shadow-md text-5xl font-bold flex items-center justify-center ${v==='X'?'text-blue-500':'text-red-500'} ${winner&&v?'win':''}"
+          ${v ||!isMyTurn || status!=='playing'?'disabled':''}>
+          ${v||''}
+        </button>`).join('')}
+    </div>
+
+    ${status!=='playing' && status!=='waiting'? `
+      <button onclick="rematch()" class="mt-4 w-full p-3 bg-blue-500 text-white rounded-lg">Rematch</button>` : ''}
+
+    <div class="mt-4 bg-white rounded-lg p-3 shadow">
+      <div id="chat" class="h-24 overflow-y-auto text-sm mb-2"></div>
+      <div class="flex gap-2">
+        <input id="msg" class="flex-1 p-2 border rounded" placeholder="Type message..." onkeypress="if(event.key==='Enter')sendMsg()">
+        <button onclick="sendMsg()" class="px-3 bg-gray-500 text-white rounded">Send</button>
+      </div>
+    </div>
+  `;
+
+  // Attach video streams
+  if(localStream) document.getElementById('localVideo').srcObject = localStream;
+}
+
+// ===== GAME LOGIC =====
+window.createRoom = () => {
+  myName = document.getElementById('name').value || 'Player1';
+  socket.emit('create_room', { name: myName }, ({ roomId: id, symbol }) => {
+    roomId = id; mySymbol = symbol; initCamera(); renderGame({ board: Array(9).fill(null), status: 'waiting', players: [{name: myName, symbol}], turn: 'X' });
+  });
+};
+
+window.joinRoom = () => {
+  myName = document.getElementById('name').value || 'Player2';
+  roomId = document.getElementById('code').value.toUpperCase();
+  socket.emit('join_room', { roomId, name: myName }, (res) => {
+    if(res.error) return alert(res.error);
+    mySymbol = res.symbol; initCamera();
+  });
+};
+
+window.makeMove = (i) => {
+  clickSnd.play();
+  socket.emit('make_move', { roomId, index: i });
+};
+
+window.rematch = () => socket.emit('rematch', roomId);
+window.sendMsg = () => {
+  const input = document.getElementById('msg');
+  if(input.value.trim()) {
+    socket.emit('chat_message', { roomId, text: input.value, name: myName });
+    input.value = '';
+  }
+};
+
+// ===== SOCKET EVENTS =====
+socket.on('room_update', renderGame);
+socket.on('game_update', (s) => { if(s.winner) winSnd.play(); renderGame(s); });
+socket.on('player_left', renderGame);
+socket.on('chat_message', ({text, name}) => {
+  const chat = document.getElementById('chat');
+  if(chat) chat.innerHTML += `<div><b>${name}:</b> ${text}</div>`;
+});
+
+// ===== WEBRTC (Video) =====
+async function initCamera() {
+  // 1. Explain BEFORE asking permission (requirement)
+  if(!confirm("Allow camera access? Your video will be shown to your opponent only, like a video call.")) return;
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    document.getElementById('localVideo').srcObject = localStream;
+    setupPeer();
+  } catch(e) {
+    console.log("Camera denied, playing without video");
+  }
+}
+
+function setupPeer() {
+  pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pc.ontrack = e => document.getElementById('remoteVideo').srcObject = e.streams[0];
+  pc.onicecandidate = e => e.candidate && socket.emit('webrtc_ice', { roomId, candidate: e.candidate });
+
+  socket.on('webrtc_offer', async ({offer}) => {
+    await pc.setRemoteDescription(offer);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit('webrtc_answer', { roomId, answer });
+  });
+  socket.on('webrtc_answer', ({answer}) => pc.setRemoteDescription(answer));
+  socket.on('webrtc_ice', ({candidate}) => pc.addIceCandidate(candidate));
+  socket.on('start_game', async () => {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('webrtc_offer', { roomId, offer });
+  });
+}
+
+// ===== START =====
+renderLobby();
+</script>
+</body>
+</html>
